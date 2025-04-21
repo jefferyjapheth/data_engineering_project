@@ -4,7 +4,7 @@ You will fetch movie-related data from an API, clean and transform the dataset, 
 key performance indicators (KPIs).
 
 
-### Table of content
+### Table of content for main.ipynb
 + Step 1: Fetch Movie Data from API
 + Step 2: Data Cleaning and Preprocessing 
     - handling Missing & Incorrect Data
@@ -22,3 +22,9 @@ key performance indicators (KPIs).
 + While fetching data append_to_json helped retrieve corresponding credits and review data for movie details
 + retrieved credits and review to help extract other key columns missing in the movie details data
     -  ratings,cast,cast_size were some of the columns needed from the credits and review data
+
+###
++ main.ipynb shows the complete workflow
++ cleaning.py module custom functions which helpedin extraction and cleaning of data
++ kpi_implementation module contains functions for kpi implementation and analysis
++ data directory contains the raw and processed versions of the data
