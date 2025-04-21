@@ -1,30 +1,10 @@
-## TMDB_MOVIE ANALYSIS USING PANDAS AND MATPLOTLIB
-This project challenges you to build a movie data analysis pipeline using Python and Pandas.
-You will fetch movie-related data from an API, clean and transform the dataset, and implement
-key performance indicators (KPIs).
+### Project Branches
 
+This project is organized into the following branches:
 
-### Table of content for main.ipynb
-+ Step 1: Fetch Movie Data from API
-+ Step 2: Data Cleaning and Preprocessing 
-    - handling Missing & Incorrect Data
-+ Step 3: KPI Implementation & Analysis 
-    -  Identify the Best/Worst Performing Movies
-+ Step 4: Data Visualization
-    - Revenue vs. Budget Trends using scatter plot
-    - ROI Distribution by Genre using bar graph(exploded genre column for accurate analysis)
-    - Popularity vs. Rating using scatter plot
-    - Yearly Trends in Box Office Performance using line chart (average revenue as performance metric)
-    - Comparison of Franchise vs. Standalone Success using bar chart 
++ Week 1: Lab: Movie Data Analysis using Pandas and APIs
+    - [TMDB Movie Data Analysis](https://github.com/jeffery-ot/data_engineering_project/tree/tmdb_movie_data_analysis)
 
++ Week 2: Lab: Inventory and Order Management System with SQL
+    - [Inventory and Order Management System with SQL](https://github.com/jeffery-ot/data_engineering_project/tree/sql_lab)    
 
-### Key Findings
-+ While fetching data append_to_json helped retrieve corresponding credits and review data for movie details
-+ retrieved credits and review to help extract other key columns missing in the movie details data
-    -  ratings,cast,cast_size were some of the columns needed from the credits and review data
-
-###
-+ main.ipynb shows the complete workflow
-+ cleaning.py module custom functions which helpedin extraction and cleaning of data
-+ kpi_implementation module contains functions for kpi implementation and analysis
-+ data directory contains the raw and processed versions of the data
