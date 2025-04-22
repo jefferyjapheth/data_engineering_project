@@ -1,2 +1,2 @@
 # Ignore configuration files
-../config.json
+**/config.json
