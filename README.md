@@ -8,3 +8,5 @@ This project is organized into the following branches:
 + Week 2: Lab: Inventory and Order Management System with SQL
     - [Inventory and Order Management System with SQL](https://github.com/jeffery-ot/data_engineering_project/tree/sql_lab)    
 
++ Week 3: Lab: Movie Data Analysis using Pyspark
+    - [Inventory and Order Management System with SQL](https://github.com/jeffery-ot/data_engineering_project/tree/pyspark/movie_data_analysis)
