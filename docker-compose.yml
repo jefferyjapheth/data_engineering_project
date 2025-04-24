@@ -1,0 +1,22 @@
+
+
+services:
+  jupyter-pyspark:
+    image: quay.io/jupyter/pyspark-notebook:latest
+    container_name: jupyter-pyspark
+    ports:
+      # Spark UI
+      - "4040:4040"
+      # Jupyter notebook
+      - "8888:8888"
+    volumes:
+      # Mount entire work directory
+      - ./:/home/jovyan/work
+    environment:
+      # Set Jupyter token for authentication
+      - JUPYTER_TOKEN=spark
+      # Spark configurations
+      - SPARK_OPTS="--driver-memory=4g --executor-memory=4g"
+    env_file:
+      - ./.env
+    command: "start-notebook.sh --NotebookApp.token=spark"
