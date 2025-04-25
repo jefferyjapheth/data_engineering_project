@@ -1,2 +1,24 @@
 .env
 **/config.json
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+**/__pycache__/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Environment variables
+.env
+
+# Docker files
+.dockerignore
+
+# Configuration files
+config.json
+
+# Python init files
+__init__.py
+
+/dataset
