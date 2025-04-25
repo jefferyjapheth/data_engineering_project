@@ -1,10 +1,14 @@
-### Project Branches
+### Project 
 
-This project is organized into the following branches:
+This project challenges you to build a movie data analysis pipeline using Python and Spark. 
+You will fetch movie-related data from an API, clean and transform the dataset, and implement 
+key performance indicators (KPIs)
 
-+ Week 1: Lab: Movie Data Analysis using Pandas and APIs
-    - [TMDB Movie Data Analysis](https://github.com/jeffery-ot/data_engineering_project/tree/tmdb_movie_data_analysis)
-
-+ Week 2: Lab: Inventory and Order Management System with SQL
-    - [Inventory and Order Management System with SQL](https://github.com/jeffery-ot/data_engineering_project/tree/sql_lab)    
-
+#### the main() function helps to do these
+• API Data Extraction: Fetch movie data from a movie database API.
+• Data Cleaning & Transformation: Process and structure the data for analysis.
+• Exploratory Data Analysis (EDA): Perform an initial exploration to understand trends.
+• Advanced Filtering & Ranking: Identify the best and worst movies based on financial 
+    and popularity metrics.
+• Franchise & Director Analysis: Assess how franchises and directors perform over time.
+• Visualization & Insights: Present key findings using visualizations.
