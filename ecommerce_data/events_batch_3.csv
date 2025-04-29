@@ -1,0 +1,11 @@
+event_id,timestamp,user_id,event_type,product_id,product_name,category,price,quantity
+f8b8fd46-2071-4d85-a767-5ecd2e56ed85,2025-04-25 17:06:59,f2779bd1-c3f1-4d3c-b12f-bbd3bef5bccb,view,e6dc439b-ecb7-48fc-b493-6e496395c21f,Especially Fear,Electronics,692.14,
+2d564e3d-51cc-42a4-83e6-0f3673537c60,2025-04-25 18:59:24,1053cb47-7279-4e12-91b1-9f57b88b7838,view,119341eb-678c-48d4-a62f-7ec6b210fa9b,Particular Believe,Sports,557.84,
+926f8fee-dc6d-436c-8832-10386a6eefb8,2025-04-26 01:38:50,0e3de117-7cbe-42f4-92d3-53b6a98f1bc5,add_to_cart,d41fed43-46fe-4ad9-a589-260eb90bfe01,Second Home,Electronics,892.52,4
+2f77f925-c774-4855-ba6b-c054ec20835c,2025-04-26 05:50:43,c48dfb48-3a2b-4bc7-84fb-0a942803ca9c,view,ad191186-09a8-4db4-a6f9-637569693ddf,Range Peace,Home & Kitchen,207.54,
+c8d27579-17aa-4634-a203-786192bd14ec,2025-04-26 06:33:53,d70a19fe-4973-4a7d-b4b6-d39ebd5bb8bf,view,969da61a-f66a-4ffc-a36b-1ddc94c002cd,Could Stand,Clothing,952.72,
+155885db-ce81-4e3e-949c-5ee14aee509d,2025-04-26 09:35:44,f62dc177-3ff2-4a59-ad12-fc0e7a1b6e68,purchase,a17a1333-cbaf-432b-9c51-de8d5ca9f761,Nation Adult,Home & Kitchen,954.26,5
+2bf77c56-d074-4678-a589-3aef17de0706,2025-04-26 14:13:46,24467fde-11c8-4922-b496-76c759a1d73c,view,98176c25-5242-4c2a-a1a3-da7941b046f8,Behind Occur,Books,911.84,
+27e334a7-eb9c-41e7-9bcf-b98c92a79095,2025-04-26 19:56:39,ab437e97-47f9-45cd-9deb-913fa4500ab8,view,bf821cdc-dfd4-4e62-ac04-7fdfd687273d,Big Can,Sports,958.15,
+cfb5f6e2-e8da-4da8-98de-1db0bf512166,2025-04-26 20:59:00,f2779bd1-c3f1-4d3c-b12f-bbd3bef5bccb,view,a36d32ea-ff07-418c-84ba-1d9e69812f59,Daughter Weight,Clothing,459.84,
+59bee0f2-ccf0-4bdf-8a40-877a55337cd1,2025-04-26 23:18:04,1053cb47-7279-4e12-91b1-9f57b88b7838,add_to_cart,acd3e27b-9a0e-4055-91b2-ed98e3a24e71,Fire Fine,Electronics,771.13,1

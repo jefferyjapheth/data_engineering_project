@@ -1,0 +1,6 @@
+faker>=18.13.0
+os
+logging
+datetime
+csv
+uuid

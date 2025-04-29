@@ -2,15 +2,15 @@
 services:
   jupyter-pyspark:
     image: quay.io/jupyter/pyspark-notebook:latest
-    container_name: jupyter-pyspark
+    container_name: jupyter-pysparkk
     ports:
       # Spark UI
-      - "4044:4040"
+      - "4040:4040"
       # Jupyter notebook
-      - "8883:8888"
+      - "8888:8888"
     volumes:
       # Mount entire work directory
-      - ./:/home/jeffery/work
+      - ./:/home/jovyan/work
     environment:
       # Set Jupyter token for authentication
       - JUPYTER_TOKEN=spark
@@ -21,11 +21,12 @@ services:
     command: "start-notebook.sh --NotebookApp.token=spark"
 
 #container for postgres and pgadmin
+
   db:
-      container_name: postgres
+      container_name: postgres_labb
       image: postgres
       environment:
-          POSTGRES_PASSWORD: Amalitech.
+          POSTGRES_PASSWORD: Amalitech
       ports:
           - "5432:5432"
       volumes:
@@ -34,10 +35,10 @@ services:
           - pgnetwork
   pgadmin:
       image: dpage/pgadmin4
-      container_name: postgres_pgadmin
+      container_name: postgres_lab_pgadminn
       environment:
           PGADMIN_DEFAULT_EMAIL: jeffery.owusu@amalitechtraining.org
-          PGADMIN_DEFAULT_PASSWORD: Amalitech.
+          PGADMIN_DEFAULT_PASSWORD: Amalitech
       ports:
           - "8080:80"
       depends_on:

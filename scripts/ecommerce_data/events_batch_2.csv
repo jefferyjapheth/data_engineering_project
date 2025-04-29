@@ -1,0 +1,11 @@
+event_id,timestamp,user_id,event_type,product_id,product_name,category,price,quantity
+7b7a4e7c-4f95-47fe-970f-52aacc4f371e,2025-04-24 03:47:38,f34212f1-fd53-48e4-91e9-d39b3764994f,view,f4dc79a7-b467-4936-bb6c-69ad15038e40,Heart Quickly,Electronics,125.75,
+066c6bcf-15b5-4e1f-ab56-6485634111c5,2025-04-24 05:19:03,ac1d50c4-2ba0-4f83-b9cc-3f7fdda50185,view,702acfd5-2035-4ff7-8dcb-b55c9e3578a9,Piece Enjoy,Clothing,440.77,
+c7e04d1e-1620-4a5d-89c0-06f2d5a1c1c5,2025-04-24 14:46:31,73a2b7d6-d96b-4e7f-a390-34fe0d3255fd,add_to_cart,d3e8644c-4a2e-4ecf-9522-c80a68d11297,Thank General,Beauty,757.47,4
+ca0232fa-53fd-4081-8c58-d2e1f1e6e972,2025-04-24 15:07:55,2b2ea4a9-1f90-4e09-ae30-828c7353a689,view,3afd68c9-dc41-4e69-a5a9-1fec26ea4220,Own Republican,Clothing,723.98,
+3f8be3f9-338a-4cf0-ac84-84575d606948,2025-04-24 15:50:16,8c27eaa9-358f-4b24-b91e-8b993e12d869,view,77bb3f52-e3f8-460b-b47a-16b42a499371,Mention Difficult,Books,41.19,
+483edbc8-799a-4e48-9d4f-5058f237e78f,2025-04-24 17:06:48,cd51e5dc-33d9-4319-8359-eb4f89461cf2,view,64f8e263-640a-4061-9d7b-dbba53e7f55d,Billion Each,Books,340.13,
+f148ba3e-0c98-4c1a-aa62-41cf3b24dcd5,2025-04-24 20:12:23,71191409-3014-4f3b-a4fc-adbc9880c98f,view,20f72e7e-3792-41c8-a779-46bf174a324e,High Nearly,Sports,507.01,
+85a01a75-3113-435b-a75b-4acc51edfb96,2025-04-24 20:13:43,f34212f1-fd53-48e4-91e9-d39b3764994f,view,bf5046c1-7769-4780-a4ec-b0747ac0e03c,Show Their,Clothing,134.09,
+88bb054c-fc66-4500-b102-bdf107ed0cea,2025-04-24 20:56:12,ebf35e7b-f360-468a-ad38-b07aae8342d5,view,a9c6bb5b-dcba-457b-826c-085bd590fc33,Make Cost,Home & Kitchen,8.19,
+d2ef25e9-73b9-4b2f-b89d-1671f36a997b,2025-04-25 01:20:01,e89f5da5-ba2b-478f-86f1-ea02d3be1578,view,d3e8644c-4a2e-4ecf-9522-c80a68d11297,Thank General,Beauty,757.47,

@@ -1,0 +1,11 @@
+event_id,timestamp,user_id,event_type,product_id,product_name,category,price,quantity
+744b63be-a323-4f04-9430-2da2b4325e22,2025-04-26 14:30:29,2b2ea4a9-1f90-4e09-ae30-828c7353a689,add_to_cart,9c42b6d0-4ea8-4668-8f4b-d8c2ce3e1377,Fight Wear,Beauty,965.65,2
+00aeb845-df96-41fe-8518-5590b6f69dbf,2025-04-26 23:48:31,2838b094-a015-4619-b6da-1ca16ea8223b,view,d0ba5428-a58c-4556-a94f-0995d07a9c53,Picture Per,Home & Kitchen,266.88,
+91eff9cf-6b85-4134-a252-c9629b86354e,2025-04-27 02:18:41,8b9c96c5-cc5a-44eb-ad68-ffcae88d2c95,view,f6d8eb4c-cb71-4b46-ad9f-eb2a8677afc9,Save Have,Clothing,995.6,
+a62ef415-bef4-49b8-a74c-e1bd567fdf20,2025-04-27 05:55:20,5eaa1932-48db-40bf-9e7a-d9c852e48f8d,view,7ecf2fce-7812-48f5-ba31-a2bee6495265,Hand Computer,Home & Kitchen,640.85,
+a189c15c-a2c8-4767-bd13-f4afabf73bc0,2025-04-27 12:01:14,9d5a2f71-3480-4023-a75f-1e8a85f21947,view,77bb3f52-e3f8-460b-b47a-16b42a499371,Mention Difficult,Books,41.19,
+bffc5e4b-8bba-4c92-8ae1-f89547b88631,2025-04-27 12:34:12,602ec600-c331-4a6d-bbe1-b160a8b82061,view,0d92c994-9bc9-4a05-8a4d-8d971afd0afb,Throughout Body,Home & Kitchen,632.6,
+e3c9166a-59a8-4fa8-bbc6-1ca46e797138,2025-04-27 15:37:18,8b9c96c5-cc5a-44eb-ad68-ffcae88d2c95,view,592eac24-55a0-42bf-9868-8fd98ca3e325,Begin Not,Home & Kitchen,365.96,
+cb38ccba-3f16-406f-a92d-b5f2368b31c7,2025-04-27 15:58:39,6c8423e2-d63b-4b3e-8bf5-22eb58b82106,view,20f72e7e-3792-41c8-a779-46bf174a324e,High Nearly,Sports,507.01,
+8cb82774-52f2-4780-a7be-9a3e131576f8,2025-04-27 17:34:51,fb21abc3-f3b4-4448-b9c2-3a4bc6e0c9f4,view,d0ba5428-a58c-4556-a94f-0995d07a9c53,Picture Per,Home & Kitchen,266.88,
+f871631f-3274-46af-b8cf-6ab568cc5928,2025-04-28 02:59:48,321207c5-c16f-4f84-b572-b793b2d0dcb1,view,9c42b6d0-4ea8-4668-8f4b-d8c2ce3e1377,Fight Wear,Beauty,965.65,
