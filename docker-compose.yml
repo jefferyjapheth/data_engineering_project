@@ -1,0 +1,55 @@
+#container for spark and jupyter
+services:
+  jupyter-pyspark:
+    image: quay.io/jupyter/pyspark-notebook:latest
+    container_name: jupyter-pyspark
+    ports:
+      # Spark UI
+      - "4044:4040"
+      # Jupyter notebook
+      - "8883:8888"
+    volumes:
+      # Mount entire work directory
+      - ./:/home/jeffery/work
+    environment:
+      # Set Jupyter token for authentication
+      - JUPYTER_TOKEN=spark
+      # Spark configurations
+      - SPARK_OPTS="--driver-memory=4g --executor-memory=4g"
+    env_file:
+      - ./.env
+    command: "start-notebook.sh --NotebookApp.token=spark"
+
+#container for postgres and pgadmin
+  db:
+      container_name: postgres
+      image: postgres
+      environment:
+          POSTGRES_PASSWORD: Amalitech.
+      ports:
+          - "5432:5432"
+      volumes:
+          - ./postgres_data:/var/lib/postgresql/data
+      networks:
+          - pgnetwork
+  pgadmin:
+      image: dpage/pgadmin4
+      container_name: postgres_pgadmin
+      environment:
+          PGADMIN_DEFAULT_EMAIL: jeffery.owusu@amalitechtraining.org
+          PGADMIN_DEFAULT_PASSWORD: Amalitech.
+      ports:
+          - "8080:80"
+      depends_on:
+          - db
+      volumes:
+          - ./pgadmin_data:/var/lib/pgadmin
+      networks:
+          - pgnetwork
+
+networks:
+  pgnetwork:
+    driver: bridge
+
+volumes:
+  postgres_data:

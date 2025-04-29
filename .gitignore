@@ -1,2 +1,4 @@
 .env
 **/config.json
+postgres_data
+pgadmin_data
