@@ -1,4 +1,4 @@
-#container for spark and jupyter
+
 services:
   jupyter-pyspark:
     image: quay.io/jupyter/pyspark-notebook:latest
@@ -11,42 +11,39 @@ services:
     volumes:
       # Mount entire work directory
       - ./:/home/jovyan/work
-    environment:
-      # Set Jupyter token for authentication
-      - JUPYTER_TOKEN=spark
-      # Spark configurations
-      - SPARK_OPTS="--driver-memory=4g --executor-memory=4g"
+      # Mount requirements.txt
+      - ./requirements.txt:/home/jovyan/requirements.txt
     env_file:
       - ./.env
-    command: "start-notebook.sh --NotebookApp.token=spark"
-
-#container for postgres and pgadmin
+    command: >
+      bash -c "pip install -r /home/jovyan/requirements.txt &&
+      start-notebook.sh --NotebookApp.token=${JUPYTER_TOKEN}"
 
   db:
-      container_name: postgres_labb
-      image: postgres
-      environment:
-          POSTGRES_PASSWORD: Amalitech
-      ports:
-          - "5432:5432"
-      volumes:
-          - ./postgres_data:/var/lib/postgresql/data
-      networks:
-          - pgnetwork
+    container_name: postgres_labb
+    image: postgres
+    env_file:
+      - ./.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - pgnetwork
+  
   pgadmin:
-      image: dpage/pgadmin4
-      container_name: postgres_lab_pgadminn
-      environment:
-          PGADMIN_DEFAULT_EMAIL: jeffery.owusu@amalitechtraining.org
-          PGADMIN_DEFAULT_PASSWORD: Amalitech
-      ports:
-          - "8080:80"
-      depends_on:
-          - db
-      volumes:
-          - ./pgadmin_data:/var/lib/pgadmin
-      networks:
-          - pgnetwork
+    image: dpage/pgadmin4
+    container_name: postgres_lab_pgadminn
+    env_file:
+      - ./.env
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    volumes:
+      - ./pgadmin_data:/var/lib/pgadmin
+    networks:
+      - pgnetwork
 
 networks:
   pgnetwork:
@@ -54,3 +51,4 @@ networks:
 
 volumes:
   postgres_data:
+  pgadmin_data:
