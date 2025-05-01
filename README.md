@@ -10,3 +10,6 @@ This project is organized into the following branches:
 
 + Week 3: Lab: Movie Data Analysis using Pyspark
     - [TMDB Movie Data Analysis with Pyspark and API](https://github.com/jeffery-ot/data_engineering_project/tree/pyspark/movie_data_analysis)
+
++ Week 4: Lab: Real-Time Data Ingestion Using Spark Structured Streaming & PostgreSQL
+    - [Real-Time Data Ingestion Using Spark Structured Streaming & PostgreSQL](https://github.com/jeffery-ot/data_engineering_project/tree/spark_ecommerce)
