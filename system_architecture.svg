@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 800 500">
+  <defs>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.3"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+      markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#555"/>
+    </marker>
+  </defs>
+  
+  <!-- Background -->
+  <rect x="0" y="0" width="800" height="500" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="400" y="40" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">E-commerce Streaming Architecture</text>
+  
+  <!-- Data Generator -->
+  <rect x="50" y="100" width="150" height="80" rx="5" ry="5" fill="#e6f2ff" stroke="#0066cc" stroke-width="2" filter="url(#shadow)"/>
+  <text x="125" y="140" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Data Generator</text>
+  <text x="125" y="165" font-family="Arial" font-size="12" text-anchor="middle">data_generator.py</text>
+  
+  <!-- CSV Files -->
+  <rect x="250" y="105" width="130" height="70" rx="5" ry="5" fill="#fff0e6" stroke="#cc6600" stroke-width="2" filter="url(#shadow)"/>
+  <text x="315" y="140" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">CSV Files</text>
+  <text x="315" y="165" font-family="Arial" font-size="12" text-anchor="middle">ecommerce_data/</text>
+  
+  <!-- Spark Streaming -->
+  <rect x="430" y="100" width="150" height="80" rx="5" ry="5" fill="#e6ffe6" stroke="#006600" stroke-width="2" filter="url(#shadow)"/>
+  <text x="505" y="140" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Spark Streaming</text>
+  <text x="505" y="165" font-family="Arial" font-size="12" text-anchor="middle">spark_streaming_to_postgres.py</text>
+  
+  <!-- PostgreSQL -->
+  <rect x="630" y="100" width="150" height="80" rx="5" ry="5" fill="#e6e6ff" stroke="#000066" stroke-width="2" filter="url(#shadow)"/>
+  <text x="705" y="140" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">PostgreSQL</text>
+  <text x="705" y="165" font-family="Arial" font-size="12" text-anchor="middle">ecommerce_events</text>
+  
+  <!-- Archived Files -->
+  <rect x="250" y="230" width="130" height="70" rx="5" ry="5" fill="#f2e6ff" stroke="#660066" stroke-width="2" filter="url(#shadow)"/>
+  <text x="315" y="265" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Archived Files</text>
+  <text x="315" y="290" font-family="Arial" font-size="12" text-anchor="middle">archived/</text>
+  
+  <!-- Checkpoints -->
+  <rect x="430" y="230" width="150" height="70" rx="5" ry="5" fill="#ffe6e6" stroke="#990000" stroke-width="2" filter="url(#shadow)"/>
+  <text x="505" y="265" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Checkpoints</text>
+  <text x="505" y="290" font-family="Arial" font-size="12" text-anchor="middle">checkpoints/</text>
+  
+  <!-- Console Output -->
+  <rect x="430" y="350" width="150" height="70" rx="5" ry="5" fill="#ffffcc" stroke="#999900" stroke-width="2" filter="url(#shadow)"/>
+  <text x="505" y="385" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Console Output</text>
+  <text x="505" y="410" font-family="Arial" font-size="12" text-anchor="middle">Debugging & Monitoring</text>
+  
+  <!-- Flow Arrows -->
+  <!-- Generator to CSV -->
+  <line x1="200" y1="140" x2="245" y2="140" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="220" y="130" font-family="Arial" font-size="12" text-anchor="middle">generates</text>
+  
+  <!-- CSV to Spark -->
+  <line x1="380" y1="140" x2="425" y2="140" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="400" y="130" font-family="Arial" font-size="12" text-anchor="middle">reads</text>
+  
+  <!-- Spark to PostgreSQL -->
+  <line x1="580" y1="140" x2="625" y2="140" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="600" y="130" font-family="Arial" font-size="12" text-anchor="middle">writes</text>
+  
+  <!-- Spark to Archive -->
+  <line x1="430" y1="180" x2="315" y2="230" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="350" y="210" font-family="Arial" font-size="12" text-anchor="middle">archives</text>
+  
+  <!-- Spark to Checkpoints -->
+  <line x1="505" y1="180" x2="505" y2="225" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="525" y="210" font-family="Arial" font-size="12" text-anchor="middle">checkpoints</text>
+  
+  <!-- Spark to Console -->
+  <line x1="505" y1="300" x2="505" y2="345" stroke="#555" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="525" y="330" font-family="Arial" font-size="12" text-anchor="middle">logs</text>
+  
+  <!-- Legend -->
+  <rect x="50" y="420" width="20" height="20" fill="#e6f2ff" stroke="#0066cc" stroke-width="2"/>
+  <text x="80" y="435" font-family="Arial" font-size="12" text-anchor="start">Python Script</text>
+  
+  <rect x="150" y="420" width="20" height="20" fill="#fff0e6" stroke="#cc6600" stroke-width="2"/>
+  <text x="180" y="435" font-family="Arial" font-size="12" text-anchor="start">Data Files</text>
+  
+  <rect x="250" y="420" width="20" height="20" fill="#e6ffe6" stroke="#006600" stroke-width="2"/>
+  <text x="280" y="435" font-family="Arial" font-size="12" text-anchor="start">Processing</text>
+  
+  <rect x="350" y="420" width="20" height

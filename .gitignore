@@ -7,3 +7,4 @@ ecommerce_data
 scripts\__pycache__
 scripts\.ipynb_checkpoints
 scripts\ecommerce_data
+quick.py

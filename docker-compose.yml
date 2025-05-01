@@ -4,17 +4,16 @@ services:
     image: quay.io/jupyter/pyspark-notebook:latest
     container_name: jupyter-pysparkk
     ports:
-      # Spark UI
-      - "4040:4040"
-      # Jupyter notebook
-      - "8888:8888"
+      - "4040:4040"    # Spark UI
+      - "8888:8888"    # Jupyter
     volumes:
-      # Mount entire work directory
       - ./:/home/jovyan/work
-      # Mount requirements.txt
       - ./requirements.txt:/home/jovyan/requirements.txt
+      - ./drivers/postgresql-42.5.1.jar:/usr/local/spark/jars/postgresql-42.5.1.jar
     env_file:
-      - ./.env
+      - ./.env           # loads JUPYTER_TOKEN, SPARK_OPTS, POSTGRES_*, PGADMIN_*
+    depends_on:
+      - db
     command: >
       bash -c "pip install -r /home/jovyan/requirements.txt &&
       start-notebook.sh --NotebookApp.token=${JUPYTER_TOKEN}"
@@ -23,19 +22,19 @@ services:
     container_name: postgres_labb
     image: postgres
     env_file:
-      - ./.env
+      - ./.env           # loads POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB
     ports:
       - "5432:5432"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
     networks:
       - pgnetwork
-  
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: postgres_lab_pgadminn
     env_file:
-      - ./.env
+      - ./.env           # loads PGADMIN_DEFAULT_EMAIL, PGADMIN_DEFAULT_PASSWORD
     ports:
       - "8080:80"
     depends_on:

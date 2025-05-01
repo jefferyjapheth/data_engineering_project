@@ -1,0 +1,5 @@
+Host: 172.21.0.2
+Port: 5432
+User: postgres
+Password: Amalitech
+Database: ecommerce_db
