@@ -3,8 +3,8 @@
 postgres_data
 pgadmin_data
 .dockerignore
-ecommerce_data
 scripts\__pycache__
 scripts\.ipynb_checkpoints
-scripts\ecommerce_data
-quick.py
+postgresql-42.7.5.jar
+scripts\spark_streaming_to_postgres.py
+drivers

@@ -1,65 +1,59 @@
-import os
-import csv
-import uuid
+#!/usr/bin/env python3
+"""
+Streaming-Friendly Sports Heart Rate Generator
+Generates synthetic heart rate data for athletes in a sports event.
+"""
 import random
 import logging
 from datetime import datetime, timedelta
-from faker import Faker
+from time import sleep
 
 # Setup logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-logger = logging.getLogger("ecommerce_gen")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger("sports_hr_streamer")
 
-# Faker instance
-fake = Faker()
+def generate_athlete_ids(num_athletes):
+    """Generates realistic athlete IDs like ATH001, ATH002, etc."""
+    return [f"ATH{str(i).zfill(3)}" for i in range(1, num_athletes + 1)]
 
-def generate_events(output_dir="ecommerce_data", num_events=100):
-    os.makedirs(output_dir, exist_ok=True)
+def generate_heart_rate_record(athlete_id, event_start_time):
+    """Generates a single heart rate record for an athlete."""
+    time_offset = random.randint(0, 2 * 60 * 60)  # Picks a random time within the last 2 hours (2 * 60 * 60 = 7200 seconds)
+    timestamp = event_start_time + timedelta(seconds=time_offset)
+    heart_rate = random.randint(90, 180) # Simulating heart rate between 90 and 180 bpm
+    return {
+        "athlete_id": athlete_id,
+        "timestamp": timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+        "heart_rate": heart_rate
+    } # Example: {'athlete_id': 'ATH001', 'timestamp': '2023-10-01 12:00:00', 'heart_rate': 120}
 
-    # Sample data pools
-    user_ids = [str(uuid.uuid4()) for _ in range(30)]
-    categories = ["Electronics", "Clothing", "Books", "Home", "Sports", "Beauty"]
-    products = [{
-        "product_id": str(uuid.uuid4()),
-        "product_name": f"{fake.word().capitalize()} {fake.word().capitalize()}",
-        "category": random.choice(categories),
-        "price": round(random.uniform(10, 500), 2)
-    } for _ in range(20)]
+def stream_heart_rate_data(num_athletes=10, num_records=100, delay=0.1):
+    """
+    Streams synthetic heart rate data.
 
-    event_types = ["view", "add_to_cart", "purchase"]
-    weights = [0.7, 0.2, 0.1]
-    start_time = datetime.now() - timedelta(days=7)
-    events = []
-     
-     
-    # Generate events
-    for _ in range(num_events):
-        product = random.choice(products)
-        event_type = random.choices(event_types, weights)[0]
-        events.append({
-            "event_id": str(uuid.uuid4()),
-            "timestamp": (start_time + timedelta(seconds=random.randint(0, 7 * 86400))).strftime("%Y-%m-%d %H:%M:%S"),
-            "user_id": random.choice(user_ids),
-            "event_type": event_type,
-            "product_id": product["product_id"],
-            "product_name": product["product_name"],
-            "category": product["category"],
-            "price": product["price"],
-            "quantity": random.randint(1, 5) if event_type in ["add_to_cart", "purchase"] else ""
-        })
+    Args:
+        num_athletes: Total number of athletes
+        num_records: Number of records to stream
+        delay: Time delay (in seconds) between records (simulates real streaming)
 
-    # Save to uniquely-named CSV file
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    batch_path = os.path.join(output_dir, f"batch_{timestamp}.csv")
-    fields = list(events[0].keys())
+    Yields:
+        dict: A heart rate data record
+    """
+    athlete_ids = generate_athlete_ids(num_athletes) # Generate athlete IDs based on the number of athletes
+    start_time = datetime.now() - timedelta(hours=2)
 
-    with open(batch_path, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fields)
-        writer.writeheader()
-        writer.writerows(events)
-
-    logger.info(f"Saved {num_events} events to {batch_path}")
-
+    for _ in range(num_records):
+        athlete_id = random.choice(athlete_ids)
+        record = generate_heart_rate_record(athlete_id, start_time)
+        yield record
+        sleep(delay)  # Simulate streaming delay
 
 if __name__ == "__main__":
-    generate_events()
+    try:
+        for record in stream_heart_rate_data(num_athletes=10, num_records=50, delay=0.2):
+            logger.info(record)  # Replace with send_to_kafka(record) in real use
+    except Exception as e:
+        logger.error(f"Streaming failed: {e}")

@@ -1,32 +1,25 @@
-  -- Create database (if it doesn’t exist)
-  CREATE DATABASE ecommerce_db;
+-- Create the database (if it doesn’t exist)
+CREATE DATABASE heartbeat_db;
 
-  -- Connect to it
-  \c ecommerce_db;
+-- Connect to the database
+\c heartbeat_db;
 
-  -- Create the events table with event_key as UUID
-  CREATE TABLE IF NOT EXISTS ecommerce_events (
-    event_key UUID PRIMARY KEY,
-    event_id UUID NOT NULL,
-    user_id UUID NOT NULL,
-    product_id UUID NOT NULL,
-    event_time TIMESTAMP NOT NULL,
-    event_type VARCHAR(20) NOT NULL,
-    product_name TEXT NOT NULL,
-    category TEXT NOT NULL,
-    price DECIMAL(10,2) NOT NULL,
-    quantity INT NOT NULL
-  );
+-- Create the table for athlete heart rate data
+CREATE TABLE IF NOT EXISTS ath_heartbeats (
+    id SERIAL PRIMARY KEY,  -- Optional auto-increment ID
+    athlete_id VARCHAR(10) NOT NULL,
+    timestamp TIMESTAMP NOT NULL,
+    heart_rate INT NOT NULL
+);
 
-  -- Indexes for common queries
-  CREATE INDEX IF NOT EXISTS idx_ecom_time ON ecommerce_events(event_time);
-  CREATE INDEX IF NOT EXISTS idx_ecom_user ON ecommerce_events(user_id);
-  CREATE INDEX IF NOT EXISTS idx_ecom_type ON ecommerce_events(event_type);
+-- Add indexes to improve query performance
+CREATE INDEX IF NOT EXISTS idx_hr_time ON ath_heartbeats(timestamp);
+CREATE INDEX IF NOT EXISTS idx_hr_athlete ON ath_heartbeats(athlete_id);
 
-  -- Convenience view of recent purchases
-  CREATE OR REPLACE VIEW recent_purchases AS
-  SELECT user_id, product_name, category, price, quantity, event_time
-  FROM ecommerce_events
-  WHERE event_type = 'purchase'
-  ORDER BY event_time DESC
-  LIMIT 100;
+-- Optional: View to get recent high heart rate events
+CREATE OR REPLACE VIEW recent_high_hr AS
+SELECT athlete_id, heart_rate, timestamp
+FROM ath_heartbeats
+WHERE heart_rate > 150
+ORDER BY timestamp DESC
+LIMIT 100;

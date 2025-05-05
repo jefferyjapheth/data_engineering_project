@@ -10,7 +10,7 @@ import threading
 import logging
 from pyspark.sql.functions import col,monotonically_increasing_id, to_timestamp,udf
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, StringType, FloatType, IntegerType
+from pyspark.sql.types import StructType, StructField, StringType, TimestampType, IntegerType
 import uuid
 
 
@@ -38,17 +38,14 @@ DB_PASS = os.getenv("POSTGRES_PASSWORD", "postgres")
 DB_DRIVER = os.getenv("POSTGRES_DRIVER", "org.postgresql.Driver")
 
 # Schema for incoming CSV events
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, 
+
 event_schema = StructType([
-    StructField("event_id", StringType(), True),  # Keeping event_id as StringType for compatibility
-    StructField("event_time", StringType(), True),
-    StructField("user_id", StringType(), True),
-    StructField("event_type", StringType(), True),
-    StructField("product_id", StringType(), True),
-    StructField("product_name", StringType(), True),
-    StructField("category", StringType(), True),
-    StructField("price", FloatType(), True),
-    StructField("quantity", IntegerType(), True)
-])  
+    StructField("athlete_id", StringType(), False),  # athlete_id as StringType, not nullable
+    StructField("timestamp", TimestampType(), False),  # timestamp as TimestampType, not nullable
+    StructField("heart_rate", IntegerType(), False)  # heart_rate as IntegerType, not nullable
+])
+
 
 # UDF for generating UUIDs
 uuid_udf = udf(lambda: str(uuid.uuid4()), StringType())
