@@ -1,5 +1,11 @@
-from kafka import KafkaProducer
+import sys
+import os
 import json
+
+# Add project root to Python path for imports
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from kafka import KafkaProducer
 from utils.logger import setup_logger
 
 # Setup logging
