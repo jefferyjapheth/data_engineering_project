@@ -12,3 +12,4 @@ scripts\run_kafka_producer.ps1
 scripts\__pycache__
 utils\__pycache__
 **/run_kafka_producer.ps1
+**/__pycache__

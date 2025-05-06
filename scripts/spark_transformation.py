@@ -52,8 +52,10 @@ def process_batch(df, batch_id):
 # Start Spark Streaming session
 def start_stream():
     spark = SparkSession.builder \
-    .appName("Heart Rate Streaming") \
-    .master("local[*]") \
+    .appName("HeartRateStreamProcessor") \
+    .config("spark.driver.memory", "4g") \
+    .config("spark.executor.memory", "4g") \
+    .config("spark.jars", "postgresql-42.7.5.jar") \
     .getOrCreate()
 
     log.info("Spark session started")
@@ -77,6 +79,12 @@ def start_stream():
         .foreachBatch(process_batch) \
         .option("checkpointLocation", CHECKPOINT_DIR) \
         .start()
+
+    df_parsed.writeStream \
+    .format("console") \
+    .start() \
+    .awaitTermination()
+
 
     log.info("Streaming query started")
     db_query.awaitTermination()
