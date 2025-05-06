@@ -13,68 +13,35 @@ from utils.logger import setup_logger
 # Setup logger
 logger = setup_logger("sports_hr_streamer")
 
-
 def generate_athlete_ids(num_athletes):
     """Generates realistic athlete IDs like ATH001, ATH002, etc."""
     return [f"ATH{str(i).zfill(3)}" for i in range(1, num_athletes + 1)]
 
-
 def generate_activity_status():
     return random.choice(["resting", "warming_up", "active"])
-    
+
 def generate_heart_rate_record(athlete_id, event_start_time):
     """Generates a single heart rate record for an athlete based on their activity."""
-    # Get athlete's activity status
     activity_status = generate_activity_status()
-
-    # Define heart rate ranges based on activity
-    if activity_status == "resting":
-        heart_rate = random.randint(60, 90)  # Resting heart rate range
-    elif activity_status == "warming_up":
-        heart_rate = random.randint(100, 120)  # Warming up range
-    else:  # active
-        heart_rate = random.randint(130, 180)  # Active heart rate range
+    heart_rate = random.randint(60, 180) if activity_status == "active" else random.randint(60, 120)
 
     # Simulate events within the last 30 minutes to 1 hour
-    time_offset = random.randint(0, 60 * 60)  # Random time within the last hour (0 to 3600 seconds)
+    time_offset = random.randint(0, 60 * 60)
     timestamp = event_start_time + timedelta(seconds=time_offset)
 
-    # Return record
     return {
         "athlete_id": athlete_id,
         "timestamp": timestamp.strftime("%Y-%m-%d %H:%M:%S"),
         "heart_rate": heart_rate,
-        "activity_status": activity_status 
+        "activity_status": activity_status
     }
 
 def stream_heart_rate_data(num_athletes=10, num_records=100, delay=0.1):
-    """Generate and return heart rate data records within a shorter time window."""
+    """Generate heart rate data records within a shorter time window."""
     athlete_ids = generate_athlete_ids(num_athletes)
-    start_time = datetime.now() - timedelta(hours=1)  # Start time is now minus 1 hour
+    start_time = datetime.now() - timedelta(hours=1)
     records = [
         generate_heart_rate_record(random.choice(athlete_ids), start_time)
-        for _ in range(num_records)
-    ]
-    return records
-
-
-
-def stream_heart_rate_data(num_athletes=10, num_records=100, delay=0.1):
-    """
-    Generates and returns heart rate data records.
-
-    Args:
-        num_athletes: Total number of athletes
-        num_records: Number of records to generate
-        delay: Time delay between records (simulates streaming)
-    
-    Returns:
-        list: A list of heart rate data records
-    """
-    athlete_ids = generate_athlete_ids(num_athletes)
-    start_time = datetime.now() - timedelta(hours=2)
-    records = [
-        generate_heart_rate_record(random.choice(athlete_ids), start_time) 
         for _ in range(num_records)
     ]
     return records
@@ -83,11 +50,11 @@ def process_and_stream_data(records, send_record, topic, delay=0.1):
     """Streams heart rate data to Kafka."""
     for record in records:
         send_record(record, topic)
-        sleep(delay)  # Simulate streaming delay
+        sleep(delay)
 
 if __name__ == "__main__":
     # Kafka configuration
-    kafka_broker = os.getenv('KAFKA_BROKER', 'localhost:9093')  # Use localhost:9093 when running locally
+    kafka_broker = os.getenv('KAFKA_BROKER', 'localhost:9093')  # Kafka broker URL
     topic = "sports_heart_rate"
 
     # Create Kafka producer

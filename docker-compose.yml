@@ -15,17 +15,17 @@ services:
     image: bitnami/kafka:3.4.0
     container_name: kafka
     ports:
-      - "9092:9092"
+      - "9093:9093"
     environment:
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_LISTENERS=INTERNAL://:9092,EXTERNAL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=INTERNAL://kafka:9092,EXTERNAL://localhost:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=INTERNAL
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
-      - ALLOW_PLAINTEXT_LISTENER=yes #set it to "no" for production
+      - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_CFG_BROKER_ID=1
       - KAFKA_ENABLE_KRAFT=no
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_PROCESS_ROLES=broker
       - KAFKA_CFG_LOG_DIRS=/bitnami/kafka/data
     volumes:
       - kafka_data:/bitnami/kafka
@@ -41,9 +41,11 @@ services:
       - "8888:8888"    # Jupyter
     volumes:
       - ./:/home/jovyan/work
-      - ./drivers/postgresql-42.5.1.jar:/usr/local/spark/jars/postgresql-42.5.1.jar
+      - ./drivers/postgresql-42.7.5.jar:/usr/local/spark/jars/postgresql-42.7.5.jar
     env_file:
-      - .env           # loads JUPYTER_TOKEN, SPARK_OPTS, POSTGRES_*, PGADMIN_*
+      - .env
+    environment:
+      - PYTHONPATH=/home/jovyan/work
     depends_on:
       - db
     command: >
@@ -53,7 +55,7 @@ services:
     container_name: postgres_labb
     image: postgres:latest
     env_file:
-      - .env           # loads POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB
+      - .env
     ports:
       - "5432:5432"
     volumes:
@@ -65,7 +67,7 @@ services:
     image: dpage/pgadmin4
     container_name: postgres_lab_pgadminn
     env_file:
-      - .env           # loads PGADMIN_DEFAULT_EMAIL, PGADMIN_DEFAULT_PASSWORD
+      - .env
     ports:
       - "8080:80"
     depends_on:
@@ -80,7 +82,5 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
-  pgadmin_data:
   kafka_data:
   zookeeper_data:
