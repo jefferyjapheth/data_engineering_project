@@ -54,7 +54,7 @@ def process_and_stream_data(records, send_record, topic, delay=0.1):
 
 if __name__ == "__main__":
     # Kafka configuration
-    kafka_broker = os.getenv('KAFKA_BROKER', 'localhost:9093')  # Kafka broker URL
+    kafka_broker = os.getenv('KAFKA_BROKER', 'localhost:9092')  # Kafka broker URL
     topic = "sports_heart_rate"
 
     # Create Kafka producer
