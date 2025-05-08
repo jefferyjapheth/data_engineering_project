@@ -1,22 +1,40 @@
 
 services:
-  jupyter-pyspark:
-    image: quay.io/jupyter/pyspark-notebook:latest
-    container_name: jupyter-pysparkk
-    ports:
-      - "4040:4040"    # Spark UI
-      - "8888:8888"    # Jupyter
-    volumes:
-      - ./:/home/jovyan/work
-      - ./requirements.txt:/home/jovyan/requirements.txt
-      - ./drivers/postgresql-42.5.1.jar:/usr/local/spark/jars/postgresql-42.5.1.jar
-    env_file:
-      - ./.env           # loads JUPYTER_TOKEN, SPARK_OPTS, POSTGRES_*, PGADMIN_*
-    depends_on:
-      - db
-    command: >
-      bash -c "pip install -r /home/jovyan/requirements.txt &&
-      start-notebook.sh --NotebookApp.token=${JUPYTER_TOKEN}"
+  spark:
+      image: bitnami/spark:latest
+      env_file:
+      - ./.env  
+      environment:
+        - SPARK_MODE=master
+      user: root
+      ports:
+        - '8080:8080'
+      volumes:
+      - ./scripts:/opt/spark/scripts
+      - ./postgresql-42.7.5.jar:/opt/spark/resource/postgresql-42.7.5.jar
+      - ./checkpoint:/opt/spark/checkpoint
+      - ./utils:/opt/spark/utils
+      networks:
+        - pgnetwork
+  spark-worker:
+      image: bitnami/spark:latest
+      env_file:
+      - ./.env  
+      depends_on:
+        - spark
+      user: root
+      environment:
+        - SPARK_MODE=worker
+        - SPARK_MASTER_URL=spark://spark:7077
+      volumes:
+      - ./scripts:/opt/spark/scripts
+      - ./postgresql-42.7.5.jar:/opt/spark/resource/postgresql-42.7.5.jar
+      - ./checkpoint:/opt/spark/checkpoint
+      - ./utils:/opt/spark/utils
+      ports:
+        - '8081:8081'
+      networks:
+        - pgnetwork
 
   db:
     container_name: postgres_labb
@@ -36,13 +54,41 @@ services:
     env_file:
       - ./.env           # loads PGADMIN_DEFAULT_EMAIL, PGADMIN_DEFAULT_PASSWORD
     ports:
-      - "8080:80"
+      - "8082:80"
     depends_on:
       - db
     volumes:
       - ./pgadmin_data:/var/lib/pgadmin
     networks:
       - pgnetwork
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - pgnetwork
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper
+    networks:
+      - pgnetwork
+
 
 networks:
   pgnetwork:
