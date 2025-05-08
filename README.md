@@ -13,3 +13,7 @@ This project is organized into the following branches:
 
 + Week 4: Lab: Real-Time Data Ingestion Using Spark Structured Streaming & PostgreSQL
     - [Real-Time Data Ingestion Using Spark Structured Streaming & PostgreSQL](https://github.com/jeffery-ot/data_engineering_project/tree/spark_ecommerce)
+
+
++ Week 5: Lab: Real-Time Customer Heart Beat Monitoring System
+    - [Real-Time Customer Heart Beat Monitoring System](https://github.com/jeffery-ot/data_engineering_project/tree/heartrate_monitoring_system)
