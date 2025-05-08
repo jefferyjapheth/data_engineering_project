@@ -3,12 +3,4 @@
 postgres_data
 pgadmin_data
 .dockerignore
-scripts\__pycache__
-scripts\.ipynb_checkpoints
-scripts\spark_streaming_to_postgres.py
-drivers
-scripts\run_kafka_producer.ps1
-scripts\__pycache__
-utils\__pycache__
-**/run_kafka_producer.ps1
 **/__pycache__

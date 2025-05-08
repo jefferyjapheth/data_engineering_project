@@ -1,12 +1,12 @@
 -- Create the database if it doesn’t exist
-CREATE DATABASE heartbeat_db;
+CREATE DATABASE heartrate_db;
 
 -- Connect to the database
-\c heartbeat_db;
+\c heartrate_db;
 
 -- Drop and recreate the table for athlete heart rate data
-DROP TABLE IF EXISTS ath_heartbeats;
-CREATE TABLE ath_heartbeats (
+DROP TABLE IF EXISTS athlete_heartrates;
+CREATE TABLE athlete_heartrates (
     id SERIAL PRIMARY KEY,
     athlete_id VARCHAR(10) NOT NULL,
     timestamp TIMESTAMP NOT NULL,
@@ -15,8 +15,8 @@ CREATE TABLE ath_heartbeats (
 );
 
 -- Indexes to improve query performance
-CREATE INDEX IF NOT EXISTS idx_hr_time ON ath_heartbeats(timestamp);
-CREATE INDEX IF NOT EXISTS idx_hr_athlete ON ath_heartbeats(athlete_id);
+CREATE INDEX IF NOT EXISTS idx_hr_time ON athlete_heartrates(timestamp);
+CREATE INDEX IF NOT EXISTS idx_hr_athlete ON athlete_heartrates(athlete_id);
 
 
 -- View 1: Recent High Heart Rate Events (> 150 bpm)
@@ -26,7 +26,7 @@ SELECT
     heart_rate,
     timestamp,
     activity_status
-FROM ath_heartbeats
+FROM athlete_heartrates
 WHERE heart_rate > 150
 ORDER BY timestamp DESC
 LIMIT 100;
@@ -39,7 +39,7 @@ SELECT
     heart_rate,
     timestamp,
     activity_status
-FROM ath_heartbeats
+FROM athlete_heartrates
 WHERE heart_rate < 40
 ORDER BY timestamp DESC
 LIMIT 100;
@@ -55,7 +55,7 @@ WITH sorted_hr AS (
         timestamp,
         LAG(heart_rate) OVER (PARTITION BY athlete_id ORDER BY timestamp) AS prev_hr,
         LAG(timestamp) OVER (PARTITION BY athlete_id ORDER BY timestamp) AS prev_time
-    FROM ath_heartbeats
+    FROM athlete_heartrates
 ),
 spike_events AS (
     SELECT 

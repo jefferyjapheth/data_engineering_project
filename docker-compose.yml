@@ -1,58 +1,40 @@
 
 services:
-  zookeeper:
-    image: wurstmeister/zookeeper
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
-    networks:
-      - appnet
-
-  kafka:
-    image: wurstmeister/kafka
-    container_name: kafka
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:29092
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    depends_on:
-      - zookeeper
-    networks:
-      - appnet
-
   spark:
-    image: bitnami/spark:latest
-    container_name: spark
-    ports:
-      - "7077:7077"
-      - "8080:8080"
-    environment:
-      - SPARK_MODE=master
-    volumes:
-      # Mount the whole project directory for easy access
-      - .:/app
-      # Mount JDBC driver where Spark can access it
-      - ./postgresql-42.7.5.jar:/opt/bitnami/spark/jars/postgresql-42.7.5.jar
-    networks:
-      - appnet
-
+      image: bitnami/spark:latest
+      env_file:
+      - ./.env  
+      environment:
+        - SPARK_MODE=master
+      user: root
+      ports:
+        - '8080:8080'
+      volumes:
+      - ./scripts:/opt/spark/scripts
+      - ./postgresql-42.7.5.jar:/opt/spark/resource/postgresql-42.7.5.jar
+      - ./checkpoint:/opt/spark/checkpoint
+      - ./utils:/opt/spark/utils
+      networks:
+        - pgnetwork
   spark-worker:
-    image: bitnami/spark:latest
-    container_name: spark-worker
-    depends_on:
-      - spark
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark:7077
-    networks:
-      - appnet
+      image: bitnami/spark:latest
+      env_file:
+      - ./.env  
+      depends_on:
+        - spark
+      user: root
+      environment:
+        - SPARK_MODE=worker
+        - SPARK_MASTER_URL=spark://spark:7077
+      volumes:
+      - ./scripts:/opt/spark/scripts
+      - ./postgresql-42.7.5.jar:/opt/spark/resource/postgresql-42.7.5.jar
+      - ./checkpoint:/opt/spark/checkpoint
+      - ./utils:/opt/spark/utils
+      ports:
+        - '8081:8081'
+      networks:
+        - pgnetwork
 
   db:
     container_name: postgres_labb
@@ -73,13 +55,68 @@ services:
     env_file:
       - .env
     ports:
-      - "8081:80"
+      - "8082:80"
     depends_on:
       - db
     volumes:
       - ./pgadmin_data:/var/lib/pgadmin
     networks:
       - appnet
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - pgnetwork
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper
+    networks:
+      - pgnetwork
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - pgnetwork
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper
+    networks:
+      - pgnetwork
+
 
 networks:
   appnet:

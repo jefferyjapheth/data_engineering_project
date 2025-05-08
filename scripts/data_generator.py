@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import sys
 import os
 # Add project root to Python path for imports
@@ -9,6 +10,18 @@ from time import sleep
 from scripts.kafka_producer import create_kafka_producer
 from utils.logger import setup_logger
 
+=======
+
+import os
+import time
+import random
+from datetime import datetime, timedelta
+from time import sleep
+from kafka_producer import create_kafka_producer
+from utils.logger import setup_logger
+
+KAFKA_TOPIC = os.getenv("KAFKA_TOPIC", "sports_athlete_heartrates")
+>>>>>>> heartrate_monitoring_system
 
 # Setup logger
 logger = setup_logger("sports_hr_streamer")
@@ -55,6 +68,7 @@ def process_and_stream_data(records, send_record, topic, delay=0.1):
 if __name__ == "__main__":
     # Kafka configuration
     kafka_broker = os.getenv('KAFKA_BROKER', 'localhost:9092')  # Kafka broker URL
+<<<<<<< HEAD
     topic = "sports_heart_rate"
 
     # Create Kafka producer
@@ -68,3 +82,13 @@ if __name__ == "__main__":
         process_and_stream_data(records, send_to_kafka, topic)
     except Exception as e:
         logger.error(f"Streaming failed: {e}")
+=======
+    #topic = "sports_heart_rate"
+
+    # Create Kafka producer
+    send_to_kafka = create_kafka_producer(kafka_broker)
+    while True:
+        records = stream_heart_rate_data(num_athletes=10, num_records=10)
+        process_and_stream_data(records, send_to_kafka, KAFKA_TOPIC)
+        time.sleep(5)
+>>>>>>> heartrate_monitoring_system

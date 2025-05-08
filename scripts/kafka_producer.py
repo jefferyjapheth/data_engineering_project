@@ -25,6 +25,10 @@ def create_kafka_producer(kafka_broker):
         bootstrap_servers=kafka_broker,
         value_serializer=lambda v: json.dumps(v).encode('utf-8')
     )
+<<<<<<< HEAD
+=======
+    
+>>>>>>> heartrate_monitoring_system
 
     def send_record(record, topic):
         """Sends a heart rate record to Kafka."""
