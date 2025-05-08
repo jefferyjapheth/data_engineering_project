@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Styles -->
+  <style>
+    .component { fill: #f8f9fa; stroke: #212529; stroke-width: 2; }
+    .component-text { font-family: Arial, sans-serif; font-size: 14px; font-weight: bold; fill: #212529; text-anchor: middle; }
+    .arrow { stroke: #495057; stroke-width: 2; marker-end: url(#arrowhead); }
+    .data-description { font-family: Arial, sans-serif; font-size: 12px; fill: #6c757d; text-anchor: middle; }
+    .title { font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; fill: #212529; text-anchor: middle; }
+    .kafka { fill: #f4f0ff; stroke: #7952b3; }
+    .spark { fill: #fff4f0; stroke: #e25a1c; }
+    .postgres { fill: #f0f8ff; stroke: #336791; }
+    .grafana { fill: #f0fff4; stroke: #f46800; }
+  </style>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#495057" />
+    </marker>
+  </defs>
+  
+  <rect width="100%" height="100%" fill="white" />
+  
+  <!-- Title -->
+  <text x="400" y="30" class="title">Kafka to PostgreSQL Data Pipeline with Grafana Visualization</text>
+  
+  <!-- Components -->
+  <rect x="100" y="100" width="120" height="60" rx="10" class="component kafka" />
+  <text x="160" y="135" class="component-text">Kafka Producer</text>
+  
+  <rect x="300" y="100" width="120" height="60" rx="10" class="component kafka" />
+  <text x="360" y="135" class="component-text">Kafka Topic</text>
+  
+  <rect x="500" y="100" width="120" height="60" rx="10" class="component spark" />
+  <text x="560" y="127" class="component-text">Spark</text>
+  <text x="560" y="145" class="component-text">Structured</text>
+  <text x="560" y="163" class="component-text">Streaming</text>
+  
+  <rect x="700" y="100" width="120" height="60" rx="10" class="component postgres" />
+  <text x="760" y="135" class="component-text">PostgreSQL</text>
+  
+  <rect x="500" y="250" width="120" height="60" rx="10" class="component grafana" />
+  <text x="560" y="285" class="component-text">Grafana</text>
+  
+  <!-- Connections -->
+  <line x1="220" y1="130" x2="290" y2="130" class="arrow" />
+  <line x1="420" y1="130" x2="490" y2="130" class="arrow" />
+  <line x1="620" y1="130" x2="690" y2="130" class="arrow" />
+  <polyline points="560,160 560,240" class="arrow" />
+  
+  <!-- Data descriptions -->
+  <text x="255" y="115" class="data-description">Raw data</text>
+  <text x="455" y="115" class="data-description">Streaming data</text>
+  <text x="655" y="115" class="data-description">Processed data</text>
+  <text x="530" y="200" class="data-description">Real-time metrics</text>
+  
+  <!-- Legend -->
+  <rect x="100" y="330" width="15" height="15" class="kafka" />
+  <text x="125" y="342" style="font-family: Arial, sans-serif; font-size: 12px; fill: #212529;">Kafka Components</text>
+  
+  <rect x="250" y="330" width="15" height="15" class="spark" />
+  <text x="275" y="342" style="font-family: Arial, sans-serif; font-size: 12px; fill: #212529;">Spark Processing</text>
+  
+  <rect x="400" y="330" width="15" height="15" class="postgres" />
+  <text x="425" y="342" style="font-family: Arial, sans-serif; font-size: 12px; fill: #212529;">PostgreSQL Storage</text>
+  
+  <rect x="550" y="330" width="15" height="15" class="grafana" />
+  <text x="575" y="342" style="font-family: Arial, sans-serif; font-size: 12px; fill: #212529;">Grafana Visualization</text>
+</svg>

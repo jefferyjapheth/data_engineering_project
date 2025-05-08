@@ -1,3 +1,5 @@
+# This is a sample docker-compose file for a PostgreSQL, pgAdmin, Apache Spark, Kafka, and Grafana setup.
+# It includes the necessary services and configurations to run them in a Docker environment.
 services:
   spark:
     image: bitnami/spark:latest
@@ -15,7 +17,6 @@ services:
       - ./utils:/opt/spark/utils
     networks:
       - pgnetwork
-
   spark-worker:
     image: bitnami/spark:latest
     env_file:
