@@ -2,16 +2,10 @@
 import os
 # import time
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, from_json, to_timestamp
+from pyspark.sql.functions import col, from_json, to_timestamp, when, last
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+from pyspark.sql.window import Window
 from logger import setup_logger
-
-# Add project root to Python path for proper imports
-# project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-# if project_root not in sys.path:
-#     sys.path.insert(0, project_root)
-
-# Now import from scripts and utils
 
 # Set up logging
 log = setup_logger("stream_processor")
@@ -28,12 +22,8 @@ TABLE_NAME = os.getenv("TABLE_NAME", "ath_heartbeats")
 CHECKPOINT_FOLDER = os.getenv("CHECKPOINT_FOLDER", "/tmp/spark_checkpoint")
 RUNNING_IN_DOCKER = os.getenv("RUNNING_IN_DOCKER", "false").lower() == "true"
 
-# Override checkpoint folder on Windows
-# if os.name == 'nt' and CHECKPOINT_FOLDER.startswith("/"):
-#     CHECKPOINT_FOLDER = os.path.join(os.getcwd(), "spark_checkpoint")
-
 # Determine correct Kafka broker
-kafka_broker = KAFKA_BROKER_DOCKER #if RUNNING_IN_DOCKER else KAFKA_BROKER_HOST
+kafka_broker = KAFKA_BROKER_DOCKER  # if RUNNING_IN_DOCKER else KAFKA_BROKER_HOST
 
 # === Define JSON Schema ===
 json_schema = StructType([
@@ -47,8 +37,23 @@ json_schema = StructType([
 def process_batch(df, batch_id):
     log.info(f"Processing batch {batch_id} with {df.count()} records")
     if df.count() > 0:
-        log.info("Writing to database...")
         try:
+            # Convert timestamp to actual timestamp type
+            df = df.withColumn("timestamp", to_timestamp("timestamp", "yyyy-MM-dd HH:mm:ss"))
+
+            # Replace 0 with null for heart_rate
+            df = df.withColumn("heart_rate", when(col("heart_rate") == 0, None).otherwise(col("heart_rate")))
+
+            # Define a window to carry forward last valid heart_rate per athlete
+            window_spec = Window.partitionBy("athlete_id").orderBy("timestamp").rowsBetween(Window.unboundedPreceding, 0)
+
+            # Fill heart_rate with last non-null value
+            df = df.withColumn("heart_rate_filled", last("heart_rate", ignorenulls=True).over(window_spec))
+
+            # Drop original and rename
+            df = df.drop("heart_rate").withColumnRenamed("heart_rate_filled", "heart_rate")
+
+            # Write to DB
             df.write.jdbc(
                 url=POSTGRES_URL,
                 table=TABLE_NAME,
@@ -59,13 +64,10 @@ def process_batch(df, batch_id):
                     "driver": POSTGRES_DRIVER,
                 }
             )
-            # log.info(f"Batch {batch_id} successfully written to DB")
         except Exception as e:
-            
-             log.error(f"Error writing batch {batch_id} to database: {str(e)}")
+            log.error(f"Error writing batch {batch_id} to database: {str(e)}")
     else:
-    
-         log.warning(f"Batch {batch_id} had no records to write.")
+        log.warning(f"Batch {batch_id} had no records to write.")
 
 # === Spark Stream Startup ===
 def start_stream():
@@ -88,30 +90,16 @@ def start_stream():
 
     df_parsed = df_stream.selectExpr("CAST(value AS STRING)") \
         .select(from_json(col("value"), json_schema).alias("data")) \
-        .select("data.*") \
-        .withColumn("timestamp", to_timestamp("timestamp", "yyyy-MM-dd HH:mm:ss"))
+        .select("data.*")
 
     db_query = df_parsed.writeStream \
         .foreachBatch(process_batch) \
         .option("checkpointLocation", CHECKPOINT_FOLDER) \
         .start()
 
-    # Optional console output
-    # db_query = df_parsed.writeStream \
-    #     .format("console") \
-    #     .option("truncate", False) \
-    #     .start()
-
-    #  log.info("Streaming query started")
     db_query.awaitTermination()
-
-
 
 # === Entry Point ===
 if __name__ == "__main__":
     log.info("Starting Heart Rate Streaming Pipeline")
-
-   
-
-    # Start Spark stream
     start_stream()

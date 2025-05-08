@@ -45,33 +45,71 @@ ORDER BY timestamp DESC
 LIMIT 100;
 
 
--- View 3: Rapid Heart Rate Increases (> +40 bpm in < 2 minutes)
 
-CREATE OR REPLACE VIEW vw_rapid_hr_increase AS
-WITH sorted_hr AS (
-    SELECT 
-        athlete_id,
-        heart_rate,
-        timestamp,
-        LAG(heart_rate) OVER (PARTITION BY athlete_id ORDER BY timestamp) AS prev_hr,
-        LAG(timestamp) OVER (PARTITION BY athlete_id ORDER BY timestamp) AS prev_time
-    FROM athlete_heartrates
-),
-spike_events AS (
-    SELECT 
-        athlete_id,
-        timestamp,
-        prev_time,
-        heart_rate,
-        prev_hr,
-        heart_rate - prev_hr AS hr_delta,
-        EXTRACT(EPOCH FROM timestamp - prev_time) AS time_diff_secs,
-        activity_status
-    FROM sorted_hr
-    WHERE prev_hr IS NOT NULL
-)
-SELECT *
-FROM spike_events
-WHERE hr_delta >= 40 AND time_diff_secs <= 120
-ORDER BY timestamp DESC
+
+
+-- View 1: Recent High Heart Rate Events (> 150 bpm)
+CREATE OR REPLACE VIEW vw_recent_high_hr AS
+SELECT 
+    athlete_id,
+    MAX(heart_rate) AS max_heart_rate,
+    MIN(heart_rate) AS min_heart_rate,
+    AVG(heart_rate) AS avg_heart_rate,
+    COUNT(*) AS total_events,
+    MAX(timestamp) AS last_event_timestamp
+FROM athlete_heartrates
+WHERE heart_rate > 150
+GROUP BY athlete_id
+ORDER BY last_event_timestamp DESC
+LIMIT 100;
+
+-- View 2: Abnormally Low Heart Rate (< 40 bpm)
+CREATE OR REPLACE VIEW vw_abnormal_low_hr AS
+SELECT 
+    athlete_id,
+    MAX(heart_rate) AS max_heart_rate,
+    MIN(heart_rate) AS min_heart_rate,
+    AVG(heart_rate) AS avg_heart_rate,
+    COUNT(*) AS total_events,
+    MAX(timestamp) AS last_event_timestamp
+FROM athlete_heartrates
+WHERE heart_rate < 40
+GROUP BY athlete_id
+ORDER BY last_event_timestamp DESC
+LIMIT 100;
+
+-- Drop the existing view if it exists
+DROP VIEW IF EXISTS vw_recent_high_hr;
+
+-- Now create the view again
+CREATE VIEW vw_recent_high_hr AS
+SELECT 
+    athlete_id,
+    MAX(heart_rate) AS max_heart_rate,
+    MIN(heart_rate) AS min_heart_rate,
+    AVG(heart_rate) AS avg_heart_rate,
+    COUNT(*) AS total_events,
+    MAX(timestamp) AS last_event_timestamp
+FROM athlete_heartrates
+WHERE heart_rate > 150
+GROUP BY athlete_id
+ORDER BY last_event_timestamp DESC
+LIMIT 100;
+
+-- Drop the existing view if it exists
+DROP VIEW IF EXISTS vw_abnormal_low_hr;
+
+-- Now create the view again
+CREATE VIEW vw_abnormal_low_hr AS
+SELECT 
+    athlete_id,
+    MAX(heart_rate) AS max_heart_rate,   -- Alias for the highest heart rate
+    MIN(heart_rate) AS min_heart_rate,   -- Alias for the lowest heart rate
+    AVG(heart_rate) AS avg_heart_rate,   -- Alias for the average heart rate
+    COUNT(*) AS total_events,            -- Alias for total number of events
+    MAX(timestamp) AS last_event_timestamp  -- Alias for the most recent event timestamp
+FROM athlete_heartrates
+WHERE heart_rate < 40
+GROUP BY athlete_id
+ORDER BY last_event_timestamp DESC
 LIMIT 100;

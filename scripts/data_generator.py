@@ -22,7 +22,7 @@ def generate_activity_status():
 def generate_heart_rate_record(athlete_id, event_start_time):
     """Generates a single heart rate record for an athlete based on their activity."""
     activity_status = generate_activity_status()
-    heart_rate = random.randint(60, 180) if activity_status == "active" else random.randint(60, 120)
+    heart_rate = random.randint(20, 210) if activity_status == "active" else random.randint(60, 120)
 
     # Simulate events within the last 30 minutes to 1 hour
     time_offset = random.randint(0, 60 * 60)
