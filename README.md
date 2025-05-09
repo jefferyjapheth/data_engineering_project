@@ -13,6 +13,8 @@ Docker Compose is used to orchestrate the following services:
 - **PGAdmin**: To manage and view PostgreSQL data.
 - **Grafana**: To visualize athlete heart rate trends and anomalies.
 -  **grafana_dashboard.yaml**: To provide automatic dashboard provisioning for Grafana
+
+
 ##### Key Setup Highlights:
 - **Spark** reads from Kafka topic `sports_athlete_heartrates`.
 - **Spark** processes data using structured streaming and writes the processed data to **PostgreSQL**.
@@ -24,7 +26,7 @@ Docker Compose is used to orchestrate the following services:
 
 #### Testing the Pipeline
 
- **data simulator** (`data_generator`) that:
+ **data simulator** (`data_generator.py`) that:
 
 - Randomly generates heart rate data for athletes `ATH001` to `ATH010`.
 - Simulates time-based activity types like resting, warming up, and being active.
@@ -46,8 +48,15 @@ Docker Compose is used to orchestrate the following services:
 
 ##### DATAFLOW
 
-![alt text](dataflow_diagram.svg)
+![Data Flow Diagram](deliverables\images\dataflow.png)   
 
+##### Sample Data 
+![Sample Data Table](deliverables/images/image.png)  
 
-##### Sample Data
-![alt text](image.png)
+### Grafana Dashboard Snapshot  
+[View the Dashboard Snapshot](http://localhost:3000/dashboard/snapshot/RJcP5sol4vCklthYdnJz63cQ2d7V3nnl)  
+
++ ![Dashboard Overview](deliverables/images/image-1.png)  
++ ![Metrics Panel](deliverables/images/image-2.png)  
++ ![Status Dashboard](deliverables/images/image-3.png)  
++ ![Performance Graphs](deliverables/images/image-4.png)

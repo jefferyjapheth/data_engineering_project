@@ -4,3 +4,5 @@ postgres_data
 pgadmin_data
 .dockerignore
 **/__pycache__
+**/collector
+**/checkpoint

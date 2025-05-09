@@ -1,6 +1,5 @@
-# import sys
+
 import os
-# import time
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, from_json, to_timestamp, when, last
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType

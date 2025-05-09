@@ -4,8 +4,8 @@ import random
 from datetime import datetime, timedelta
 from time import sleep
 
-from kafka_producer import create_kafka_producer  # Your custom Kafka producer function
-from utils.logger import setup_logger  # Your custom logger setup
+from kafka_producer import create_kafka_producer  # custom Kafka producer function
+from utils.logger import setup_logger  # custom logger setup
 
 # === Configuration ===
 KAFKA_TOPIC = os.getenv("KAFKA_TOPIC", "sports_athlete_heartrates")  # Kafka topic name
