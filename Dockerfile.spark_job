@@ -1,0 +1,18 @@
+# Use Bitnami Spark as the base image
+FROM bitnami/spark:latest
+
+# Set the working directory
+WORKDIR /opt/spark
+
+# Copy transformation script and resources
+COPY scripts/ ./scripts
+COPY postgresql-42.7.5.jar ./resources/postgresql-42.7.5.jar
+
+# Install Python dependencies (kafka-python for Kafka integration)
+RUN pip install --no-cache-dir kafka-python
+
+# Default command to run the Spark transformation job
+CMD ["spark-submit", \
+     "--packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.5", \
+     "--jars", "/opt/spark/resources/postgresql-42.7.5.jar", \
+     "/opt/spark/scripts/spark_transformation.py"]

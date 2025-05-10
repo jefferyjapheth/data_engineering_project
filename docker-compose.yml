@@ -1,10 +1,9 @@
-# This is a sample docker-compose file for a PostgreSQL, pgAdmin, Apache Spark, Kafka, and Grafana setup.
-# It includes the necessary services and configurations to run them in a Docker environment.
+
 services:
   spark:
     image: bitnami/spark:latest
     env_file:
-      - ./.env
+      - .env
     environment:
       - SPARK_MODE=master
     user: root
@@ -17,10 +16,11 @@ services:
       - ./utils:/opt/spark/utils
     networks:
       - pgnetwork
+
   spark-worker:
     image: bitnami/spark:latest
     env_file:
-      - ./.env
+      - .env
     depends_on:
       - spark
     user: root
@@ -37,11 +37,25 @@ services:
     networks:
       - pgnetwork
 
+  spark-job:
+    build:
+      context: .
+      dockerfile: Dockerfile.spark_job
+    env_file:
+      - .env
+    depends_on:
+      - spark
+      - kafka
+      - db
+    user: root
+    networks:
+      - pgnetwork
+
   db:
     container_name: postgres_labb
     image: postgres
     env_file:
-      - ./.env  # loads POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB
+      - .env
     ports:
       - "5432:5432"
     volumes:
@@ -49,20 +63,31 @@ services:
       - ./postgres_setup.sql:/docker-entrypoint-initdb.d/postgres_setup.sql
     networks:
       - pgnetwork
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   pgadmin:
     image: dpage/pgadmin4
     container_name: postgres_lab_pgadminn
     env_file:
-      - ./.env  # loads PGADMIN_DEFAULT_EMAIL, PGADMIN_DEFAULT_PASSWORD
+      - .env
     ports:
       - "8082:80"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - ./pgadmin_data:/var/lib/pgadmin
     networks:
       - pgnetwork
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/misc/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   zookeeper:
     image: wurstmeister/zookeeper
@@ -89,13 +114,17 @@ services:
       - zookeeper
     networks:
       - pgnetwork
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9092"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
-  # Add Grafana service
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
     env_file:
-      - ./.env  # load GF_SECURITY_ADMIN_PASSWORD, etc.
+      - .env
     environment:
       - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
@@ -105,7 +134,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - grafana_data:/var/lib/grafana
       - ./datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
@@ -114,6 +144,11 @@ services:
     networks:
       - pgnetwork
     restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   data_generator:
     build:
@@ -129,8 +164,6 @@ services:
       - pgnetwork
     command: ["/wait-for-kafka.sh", "kafka", "python", "scripts/data_generator.py"]
 
-
-
 networks:
   pgnetwork:
     driver: bridge
@@ -138,4 +171,4 @@ networks:
 volumes:
   postgres_data:
   pgadmin_data:
-  grafana_data:  # Volume for Grafana data persistence
+  grafana_data:

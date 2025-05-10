@@ -1,62 +1,104 @@
-### System Setup and Testing
+## Data Sample and Flow
 
-The goal of this project is to simulate near real-time heartrate monitor for a sporting events.
-The use of Grafana dashboards help provide insights for athletes(ath) who at risk of cardiac arrests.
+![Data Flow Diagram](deliverables/images/dataflow.png)
+![Sample Data Table](deliverables/images/image.png)# Athlete Heart Monitoring System
 
-####  System Setup Using Docker Compose
+## Overview
+A real-time data processing pipeline that monitors athletes' heart rates during sports events using Kafka for streaming, Spark for processing, PostgreSQL for storage, and Grafana for visualization. The system tracks heart rates, detects abnormal conditions, and provides insights for medical staff and coaches.
 
-Docker Compose is used to orchestrate the following services:
+## Key Components
+- **Kafka & Zookeeper**: Message streaming and broker coordination
+- **Spark**: Real-time data processing and cleansing
+- **PostgreSQL & PGAdmin**: Data storage and database management
+- **Grafana**: Visualization and alerting
 
-- **Kafka and Zookeeper**: For real-time message streaming.
-- **PostgreSQL**: To store cleaned and transformed heart rate data.
-- **Spark**: To stream-process data from Kafka and write it to PostgreSQL.
-- **PGAdmin**: To manage and view PostgreSQL data.
-- **Grafana**: To visualize athlete heart rate trends and anomalies.
--  **grafana_dashboard.yaml**: To provide automatic dashboard provisioning for Grafana
+## Business Logic
+- Real-time health monitoring (identifying dangerous heart rates: <40bpm or >150bpm)
+- Automatic handling of missing data points
+- Trend analysis and anomaly detection
+- Real-time alerts for medical intervention
 
+## System Setup and Testing
 
-##### Key Setup Highlights:
-- **Spark** reads from Kafka topic `sports_athlete_heartrates`.
-- **Spark** processes data using structured streaming and writes the processed data to **PostgreSQL**.
-- **PostgreSQL** stores data in the `athlete_heartrates` table.
-- **Grafana** is provisioned with a PostgreSQL datasource and a JSON dashboard directory.
-- The `.env` file centralizes configurations such as user credentials and Kafka broker settings.
+The goal of this project is to simulate near real-time heart rate monitoring for sporting events. The Grafana dashboards provide insights for identifying athletes at risk of cardiac arrests.
 
----
+### Quick Start
+
+#### One-Command Deployment
+The entire system runs with a single command:
+```bash
+docker-compose up --build
+```
+
+This starts all services with:
+- Pre-configured Kafka topic `sports_athlete_heartrates`
+- Structured streaming in Spark 
+- PostgreSQL table `athlete_heartrates`
+- Grafana with automatic dashboard provisioning via `grafana_dashboard.yaml`
+- Centralized configurations in `.env` file
 
 #### Testing the Pipeline
+1. Start the data generator:
+   ```bash
+   python scripts/data_generator.py
+   ```
 
- **data simulator** (`data_generator.py`) that:
+2. Access the Spark container:
+   ```bash
+   docker exec -it data_engineering_project-spark-1 bash
+   cd /opt/spark/scripts
+   ```
 
-- Randomly generates heart rate data for athletes `ATH001` to `ATH010`.
-- Simulates time-based activity types like resting, warming up, and being active.
-- Sends heart rate data to Kafka in batches every few seconds.
+3. Run the Spark job:
+   ```bash
+   spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.5 --jars /opt/spark/resource/postgresql-42.7.5.jar spark_transformation.py
+   ```
 
-##### End-to-End Test Flow:
- Start all services with bash:
-   - docker-compose up --build
-   - python scripts/data_generator.py
+### Accessing Services
+- **Grafana**: http://localhost:3000
+- **PGAdmin**: http://localhost:8082
+- **Dashboard Snapshot**: [View Live](http://localhost:3000/dashboard/snapshot/RJcP5sol4vCklthYdnJz63cQ2d7V3nnl)
 
-   Run this in your terminal:
-   - docker exec -it data_engineering_project-spark-1 bash
-   
-    Switch directory using :
-    - cd /opt/spark/scripts 
+## Data Flow
+1. Data generator simulates heart rates for athletes ATH001-ATH010
+2. Data flows to Kafka topic `sports_athlete_heartrates`
+3. Spark processes the stream and writes to PostgreSQL
+4. Grafana visualizes the data with preconfigured dashboards
 
-    Run the Kafka Consumer and Spark by running this in the switched directory:
-   - spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.5 --jars /opt/spark/resource/postgresql-42.7.5.jar spark_transformation.py
+## Dashboard Highlights
 
-##### DATAFLOW
+![Dashboard Overview](deliverables/images/image-1.png)
+![Metrics Panel](deliverables/images/image-2.png)
+![Status Dashboard](deliverables/images/image-3.png)
+![Performance Graphs](deliverables/images/image-4.png)
 
-![Data Flow Diagram](deliverables\images\dataflow.png)   
+The Grafana dashboard shows:
+- Current heart rates for all athletes
+- Historical trends and patterns
+- Abnormal heart rate alerts (<40bpm or >150bpm)
+- Activity status correlation with heart rate
 
-##### Sample Data 
-![Sample Data Table](deliverables/images/image.png)  
+## Project Components & Deliverables
 
-### Grafana Dashboard Snapshot  
-[View the Dashboard Snapshot](http://localhost:3000/dashboard/snapshot/RJcP5sol4vCklthYdnJz63cQ2d7V3nnl)  
+This project includes all required components:
 
-+ ![Dashboard Overview](deliverables/images/image-1.png)  
-+ ![Metrics Panel](deliverables/images/image-2.png)  
-+ ![Status Dashboard](deliverables/images/image-3.png)  
-+ ![Performance Graphs](deliverables/images/image-4.png)
+1. **Python Scripts**
+   - `data_generator.py`: Simulates athlete heart rate data
+   - `spark_transformation.py`: Processes Kafka streams in Spark
+
+2. **SQL Schema**
+   - Database schema file creates the `athlete_heartrates` table
+   - Includes indexes for optimized queries
+   - Creates views for abnormal heart rates (high >150bpm and low <40bpm)
+
+3. **Docker Configuration**
+   - `docker-compose.yml` orchestrates all services
+   - `.env` file for centralized configuration
+
+4. **Documentation**
+   - This README with setup guide and system overview
+   - Data flow diagrams and architecture details
+
+5. **Sample Outputs**
+   - Data samples and dashboard screenshots
+   - Live dashboard snapshot link

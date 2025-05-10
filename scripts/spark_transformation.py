@@ -76,15 +76,24 @@ def process_batch(df, batch_id):
 
 # === Spark Stream Startup ===
 def start_stream():
+    # Create Spark session with optimizations
     spark = SparkSession.builder \
         .appName("HeartRateStreamProcessor") \
-        .config(
-            "spark.jars.packages",
-            "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.5"
-        ) \
-        .getOrCreate()
+        .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.5") \
+        .config("spark.sql.shuffle.partitions", 200) \
+        .config("spark.streaming.kafka.maxOffsetsPerTrigger", 1000) \
+        .config("spark.streaming.kafka.maxRatePerPartition", 500) \
+        .config("spark.sql.streaming.stateStore.maintenanceInterval", "10s") \
+        .getOrCreate()  # Creates or retrieves an existing Spark session
 
-    log.info("Spark session started")
+    log.info("Spark session started")  # Logs the start of the Spark session
+
+    # Notes:
+    # - shuffle.partitions (Adjust shuffle partitions for optimal performance)
+    # - maxOffsetsPerTrigger (Limit the offsets processed per trigger)
+    # - maxRatePerPartition (Limit max rate per partition to prevent overloading)
+    # - stateStore.maintenanceInterval (State store cleanup interval)
+
 
     df_stream = spark.readStream \
         .format("kafka") \

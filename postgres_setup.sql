@@ -1,8 +1,8 @@
 -- Create the database if it doesn’t exist
-CREATE DATABASE heartrate_db;
+--CREATE DATABASE heartrate_db;
 
 -- Connect to the database
-\c heartrate_db;
+--\c heartrate_db;
 
 -- Drop and recreate the table for athlete heart rate data
 DROP TABLE IF EXISTS athlete_heartrates;
