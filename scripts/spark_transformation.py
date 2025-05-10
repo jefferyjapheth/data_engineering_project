@@ -1,5 +1,5 @@
-
 import os
+import time
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, from_json, to_timestamp, when, last
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
@@ -10,8 +10,7 @@ from logger import setup_logger
 log = setup_logger("stream_processor")
 
 # === Load Environment Variables ===
-KAFKA_BROKER_DOCKER = os.getenv("KAFKA_BROKER_DOCKER", "kafka:29092")
-KAFKA_BROKER_HOST = os.getenv("KAFKA_BROKER_HOST", "localhost:9092")
+KAFKA_BROKER = os.getenv("KAFKA_BROKER", "kafka:9092")
 KAFKA_TOPIC = os.getenv("KAFKA_TOPIC", "sports_athlete_heartrates")
 POSTGRES_URL = os.getenv("POSTGRES_URL", "jdbc:postgresql://db:5432/heartbeat_db")
 POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
@@ -21,8 +20,15 @@ TABLE_NAME = os.getenv("TABLE_NAME", "ath_heartbeats")
 CHECKPOINT_FOLDER = os.getenv("CHECKPOINT_FOLDER", "/tmp/spark_checkpoint")
 RUNNING_IN_DOCKER = os.getenv("RUNNING_IN_DOCKER", "false").lower() == "true"
 
+# === Generate a Unique Checkpoint Folder ===
+# Append current timestamp to make sure the checkpoint folder is unique
+timestamp = time.strftime("%Y%m%d%H%M%S")
+CHECKPOINT_FOLDER_UNIQUE = f"{CHECKPOINT_FOLDER}_{timestamp}"
+
+log.info(f"Using checkpoint directory: {CHECKPOINT_FOLDER_UNIQUE}")
+
 # Determine correct Kafka broker
-kafka_broker = KAFKA_BROKER_DOCKER  # if RUNNING_IN_DOCKER else KAFKA_BROKER_HOST
+kafka_broker = KAFKA_BROKER 
 
 # === Define JSON Schema ===
 json_schema = StructType([
@@ -93,7 +99,7 @@ def start_stream():
 
     db_query = df_parsed.writeStream \
         .foreachBatch(process_batch) \
-        .option("checkpointLocation", CHECKPOINT_FOLDER) \
+        .option("checkpointLocation", CHECKPOINT_FOLDER_UNIQUE) \
         .start()
 
     db_query.awaitTermination()

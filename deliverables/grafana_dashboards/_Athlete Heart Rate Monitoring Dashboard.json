@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 7,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -517,115 +517,6 @@
       },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "Heart Rate (bpm)",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "points",
-            "fillOpacity": 50,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "always",
-            "spanNulls": true,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "line"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "transparent"
-              },
-              {
-                "color": "red",
-                "value": 150
-              }
-            ]
-          },
-          "unit": "bpm"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "heart_rate"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "${__field.labels.athlete_id}"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 24,
-        "x": 0,
-        "y": 20
-      },
-      "id": 10,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "12.0.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "P44368ADAD746BC27"
-          },
-          "format": "time_series",
-          "rawSql": "SELECT timestamp as time, heart_rate, athlete_id FROM vw_high_hr_events WHERE athlete_id ~ '${athlete:regex}' AND timestamp > $__timeFrom() AND timestamp < $__timeTo() ORDER BY timestamp ASC;",
-          "refId": "H",
-          "timeColumn": "timestamp"
-        }
-      ],
-      "title": "High Heart Rate Events",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "grafana-postgresql-datasource",
-        "uid": "P44368ADAD746BC27"
-      },
-      "fieldConfig": {
-        "defaults": {
           "custom": {
             "align": "auto",
             "cellOptions": {
@@ -693,7 +584,7 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 20
       },
       "id": 5,
       "options": {
@@ -756,7 +647,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 32
+        "y": 26
       },
       "id": 8,
       "options": {
@@ -871,7 +762,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 34
       },
       "id": 9,
       "options": {
@@ -940,7 +831,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": " Athlete Heart Rate Monitoring Dashboard",
+  "title": "Athlete Heart Rate Monitoring Dashboard",
   "uid": "athlete-hr-fixed",
   "version": 1
 }

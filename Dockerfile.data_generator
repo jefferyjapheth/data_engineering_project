@@ -1,0 +1,22 @@
+# Start from your base image
+FROM python:3.11-slim
+
+# Install dependencies (including netcat-openbsd)
+RUN apt-get update && apt-get install -y netcat-openbsd
+
+# Install other required packages (if needed)
+RUN pip install kafka-python
+
+# Copy your project files into the container
+COPY ./scripts /app/scripts
+WORKDIR /app
+
+# Copy the wait-for-kafka script
+COPY wait-for-kafka.sh /wait-for-kafka.sh
+RUN chmod +x /wait-for-kafka.sh
+
+# Set the environment variables
+ENV KAFKA_BROKER=kafka:9092
+
+# Run the wait-for-kafka script before starting the main application
+CMD ["/wait-for-kafka.sh", "kafka", "python", "scripts/data_generator.py"]

@@ -46,6 +46,7 @@ services:
       - "5432:5432"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+      - ./postgres_setup.sql:/docker-entrypoint-initdb.d/postgres_setup.sql
     networks:
       - pgnetwork
 
@@ -79,10 +80,9 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:29092
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
@@ -114,6 +114,21 @@ services:
     networks:
       - pgnetwork
     restart: always
+
+  data_generator:
+    build:
+      context: .
+      dockerfile: Dockerfile.data_generator
+    env_file:
+      - .env
+    environment:
+      - KAFKA_BROKER=kafka:9092
+    depends_on:
+      - kafka
+    networks:
+      - pgnetwork
+    command: ["/wait-for-kafka.sh", "kafka", "python", "scripts/data_generator.py"]
+
 
 
 networks:
