@@ -1,7 +1,6 @@
-## Data Sample and Flow
 
-![Data Flow Diagram](deliverables/images/dataflow.png)
-![Sample Data Table](deliverables/images/image.png)# Athlete Heart Monitoring System
+
+# Athlete Heart Monitoring System
 
 ## Overview
 A real-time data processing pipeline that monitors athletes' heart rates during sports events using Kafka for streaming, Spark for processing, PostgreSQL for storage, and Grafana for visualization. The system tracks heart rates, detects abnormal conditions, and provides insights for medical staff and coaches.
@@ -11,6 +10,12 @@ A real-time data processing pipeline that monitors athletes' heart rates during 
 - **Spark**: Real-time data processing and cleansing
 - **PostgreSQL & PGAdmin**: Data storage and database management
 - **Grafana**: Visualization and alerting
+### UI's for the project
+- [**Grafana**](http://localhost:3000)
+- [**pgAdmin**](http://localhost:8082)
+- [**Spark Master UI**](http://localhost:8080)
+- [**Spark Worker UI**](http://localhost:8081)
+
 
 ## Business Logic
 - Real-time health monitoring (identifying dangerous heart rates: <40bpm or >150bpm)
@@ -102,3 +107,11 @@ This project includes all required components:
 5. **Sample Outputs**
    - Data samples and dashboard screenshots
    - Live dashboard snapshot link
+   
+### Data Flow
+
+![Data Flow Diagram](deliverables/images/data_architecture.png)
+
+
+### Sample Data
+![Sample Data Table](deliverables/images/image.png)

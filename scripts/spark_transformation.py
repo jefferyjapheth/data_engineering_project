@@ -1,13 +1,17 @@
 import os
 import time
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, from_json, to_timestamp, when, last
+from pyspark.sql.functions import col, from_json, to_timestamp, when,when, col, to_timestamp, avg, min as spark_min, max as spark_max
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 from pyspark.sql.window import Window
 from logger import setup_logger
 
+
+
+
 # Set up logging
-log = setup_logger("stream_processor")
+log = setup_logger("stream_processor", log_file="logs/stream_processor.log")
+
 
 # === Load Environment Variables ===
 KAFKA_BROKER = os.getenv("KAFKA_BROKER", "kafka:9092")
@@ -39,24 +43,44 @@ json_schema = StructType([
 ])
 
 # === Spark Processing Function ===
+
 def process_batch(df, batch_id):
     log.info(f"Processing batch {batch_id} with {df.count()} records")
     if df.count() > 0:
         try:
-            # Convert timestamp to actual timestamp type
-            df = df.withColumn("timestamp", to_timestamp("timestamp", "yyyy-MM-dd HH:mm:ss"))
+            # Convert timestamp to proper timestamp type
+            df = df.withColumn("timestamp", to_timestamp("timestamp", "yyyy-MM-dd HH:mm:ss"))  # Convert to timestamp
 
-            # Replace 0 with null for heart_rate
-            df = df.withColumn("heart_rate", when(col("heart_rate") == 0, None).otherwise(col("heart_rate")))
+            # Replace heart_rate == 0 with null
+            df = df.withColumn("heart_rate", when(col("heart_rate") == 0, None).otherwise(col("heart_rate")))  # Treat 0 as missing
 
-            # Define a window to carry forward last valid heart_rate per athlete
-            window_spec = Window.partitionBy("athlete_id").orderBy("timestamp").rowsBetween(Window.unboundedPreceding, 0)
+            # Count nulls before filling
+            null_count = df.filter(col("heart_rate").isNull()).count()  # Count missing heart_rate values
+            log.info(f"Batch {batch_id} has {null_count} missing heart_rate values to impute")
 
-            # Fill heart_rate with last non-null value
-            df = df.withColumn("heart_rate_filled", last("heart_rate", ignorenulls=True).over(window_spec))
+            # Define a limited window: last 5 records per athlete based on time
+            window_spec = Window.partitionBy("athlete_id").orderBy("timestamp").rowsBetween(-4, 0)  # Last 5 rows
 
-            # Drop original and rename
-            df = df.drop("heart_rate").withColumnRenamed("heart_rate_filled", "heart_rate")
+            # Compute rolling average heart rate in the window
+            df = df.withColumn("mean_heart_rate", avg("heart_rate").over(window_spec))  # Compute rolling average
+
+            # Replace null heart_rate with rolling average
+            df = df.withColumn("heart_rate", when(col("heart_rate").isNull(), col("mean_heart_rate")).otherwise(col("heart_rate")))  # Fill missing with mean
+
+            # Drop helper column
+            df = df.drop("mean_heart_rate")  # Clean up
+
+            # Compute summary stats
+            stats = df.select(
+                spark_min("heart_rate").alias("min_hr"),
+                spark_max("heart_rate").alias("max_hr"),
+                avg("heart_rate").alias("avg_hr")
+            ).collect()[0]
+
+            log.info(
+                f"Batch {batch_id} heart rate stats — Min: {stats['min_hr']:.2f}, "
+                f"Max: {stats['max_hr']:.2f}, Avg: {stats['avg_hr']:.2f}"
+            )
 
             # Write to DB
             df.write.jdbc(
@@ -73,6 +97,7 @@ def process_batch(df, batch_id):
             log.error(f"Error writing batch {batch_id} to database: {str(e)}")
     else:
         log.warning(f"Batch {batch_id} had no records to write.")
+
 
 # === Spark Stream Startup ===
 def start_stream():

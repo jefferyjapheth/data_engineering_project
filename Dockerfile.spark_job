@@ -8,6 +8,13 @@ WORKDIR /opt/spark
 COPY scripts/ ./scripts
 COPY postgresql-42.7.5.jar ./resources/postgresql-42.7.5.jar
 
+# Switch to root user to create logs directory
+USER root
+
+# Create logs directory with root privileges
+RUN mkdir -p /app/logs
+
+
 # Install Python dependencies (kafka-python for Kafka integration)
 RUN pip install --no-cache-dir kafka-python
 

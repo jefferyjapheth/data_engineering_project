@@ -9,9 +9,9 @@ from logger import setup_logger  # custom logger
 # === Configuration ===
 KAFKA_TOPIC = os.getenv("KAFKA_TOPIC", "sports_athlete_heartrates")  # Kafka topic
 KAFKA_BROKER = os.getenv("KAFKA_BROKER", "kafka:9092") # Kafka broker
-BATCH_SIZE = int(os.getenv("HR_BATCH_SIZE", 10))  # Number of records per batch
+BATCH_SIZE = int(os.getenv("HR_BATCH_SIZE", 200))  # Number of records per batch
 BATCH_INTERVAL = float(os.getenv("HR_BATCH_INTERVAL", 5))  # Seconds between batches
-NUM_ATHLETES = int(os.getenv("NUM_ATHLETES", 10))  # Number of simulated athletes
+NUM_ATHLETES = int(os.getenv("NUM_ATHLETES", 50))  # Number of simulated athletes
 
 # === Logger Setup ===
 logger = setup_logger("sports_hr_streamer")

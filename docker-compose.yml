@@ -48,8 +48,11 @@ services:
       - kafka
       - db
     user: root
+    volumes:
+      - ./logs:/app/logs  # to persist logs
     networks:
       - pgnetwork
+
 
   db:
     container_name: postgres_labb
@@ -84,7 +87,7 @@ services:
     networks:
       - pgnetwork
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/misc/ping"]
+      test: ["CMD-SHELL", "curl -f http://localhost:80 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
