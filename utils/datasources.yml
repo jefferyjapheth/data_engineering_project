@@ -8,7 +8,7 @@ datasources:
     secureJsonData:
       password: 'Amalitech'  # The password for the PostgreSQL user
     jsonData:
-      database: heartrate_db  # The name of your PostgreSQL database
+      database: flight_price_db # The name of your PostgreSQL database
       sslmode: 'disable'  # Disable SSL mode for local development
       maxOpenConns: 100
       maxIdleConns: 100

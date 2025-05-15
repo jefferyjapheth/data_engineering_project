@@ -2,6 +2,9 @@
 **/config.json
 **/postgres_data
 **/pgadmin_data
+**/mysql_data
+**/logs
+**/grafana_data
 .dockerignore
 **/__pycache__
 **/collector

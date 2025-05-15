@@ -1,0 +1,23 @@
+FROM python:3.11-slim
+
+WORKDIR /app/data
+# Install Kaggle CLI
+RUN pip install kaggle
+
+# Create .kaggle directory for API key
+RUN mkdir -p /root/.kaggle
+
+# # Copy app and kaggle.json
+COPY ../data_extractor /app/data_extractor
+
+# # Move kaggle.json to correct location and set permissions
+RUN mv /app/data_extractor/kaggle.json /root/.kaggle/kaggle.json && chmod 600 /root/.kaggle/kaggle.json
+
+
+
+# Set Kaggle environment variables from .env
+ENV KAGGLE_USERNAME=${KAGGLE_USERNAME}
+ENV KAGGLE_KEY=${KAGGLE_KEY}
+ENV KAGGLE_CONFIG_DIR=/root/.kaggle
+
+CMD ["python", "data_extractor.py"]

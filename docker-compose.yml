@@ -1,69 +1,39 @@
 
 services:
-  spark:
-    image: bitnami/spark:latest
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql
     env_file:
       - .env
     environment:
-      - SPARK_MODE=master
-    user: root
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     ports:
-      - '8080:8080'
+      - "3306:3306"
     volumes:
-      - ./scripts:/opt/spark/scripts
-      - ./postgresql-42.7.5.jar:/opt/spark/resource/postgresql-42.7.5.jar
-      - ./checkpoint:/opt/spark/checkpoint
-      - ./utils:/opt/spark/utils
+      - ./data/mysql_data:/var/lib/mysql
+      - ./scripts/mysql_setup.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - pgnetwork
-
-  spark-worker:
-    image: bitnami/spark:latest
-    env_file:
-      - .env
-    depends_on:
-      - spark
-    user: root
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark:7077
-    volumes:
-      - ./scripts:/opt/spark/scripts
-      - ./postgresql-42.7.5.jar:/opt/spark/resource/postgresql-42.7.5.jar
-      - ./checkpoint:/opt/spark/checkpoint
-      - ./utils:/opt/spark/utils
-    ports:
-      - '8081:8081'
-    networks:
-      - pgnetwork
-
-  spark-job:
-    build:
-      context: .
-      dockerfile: Dockerfile.spark_job
-    env_file:
-      - .env
-    depends_on:
-      - spark
-      - kafka
-      - db
-    user: root
-    volumes:
-      - ./logs:/app/logs  # to persist logs
-    networks:
-      - pgnetwork
-
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   db:
+    image: postgres:latest
     container_name: postgres_labb
-    image: postgres
     env_file:
       - .env
     ports:
       - "5432:5432"
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
-      - ./postgres_setup.sql:/docker-entrypoint-initdb.d/postgres_setup.sql
+      - ./data/postgres_data:/var/lib/postgresql/data
+      - ./scripts/postgres_setup.sql:/docker-entrypoint-initdb.d/postgres_setup.sql
     networks:
       - pgnetwork
     healthcheck:
@@ -83,7 +53,7 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./pgadmin_data:/var/lib/pgadmin
+      - ./data/pgadmin_data:/var/lib/pgadmin
     networks:
       - pgnetwork
     healthcheck:
@@ -91,37 +61,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  zookeeper:
-    image: wurstmeister/zookeeper
-    container_name: zookeeper
-    ports:
-      - "2181:2181"
-    networks:
-      - pgnetwork
-
-  kafka:
-    image: wurstmeister/kafka
-    container_name: kafka
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    depends_on:
-      - zookeeper
-    networks:
-      - pgnetwork
-    healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "9092"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
 
   grafana:
     image: grafana/grafana:latest
@@ -140,10 +79,10 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - grafana_data:/var/lib/grafana
-      - ./datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
-      - ./grafana_dashboard.yml:/etc/grafana/provisioning/dashboards/grafana_dashboard.yml
-      - ./deliverables/grafana_dashboards:/etc/grafana/provisioning/dashboards/grafana_dashboards
+      - ./data/grafana_data:/var/lib/grafana
+      - ./utils/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - ./utils/grafana_dashboard.yml:/etc/grafana/provisioning/dashboards/grafana_dashboard.yml
+      - ./utils/grafana_dashboards:/etc/grafana/provisioning/dashboards/grafana_dashboards
     networks:
       - pgnetwork
     restart: always
@@ -153,25 +92,73 @@ services:
       timeout: 5s
       retries: 5
 
-  data_generator:
-    build:
-      context: .
-      dockerfile: Dockerfile.data_generator
+  spark:
+    image: bitnami/spark:latest
     env_file:
       - .env
     environment:
-      - KAFKA_BROKER=kafka:9092
-    depends_on:
-      - kafka
+      - SPARK_MODE=master
+    user: root
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./scripts:/opt/spark/scripts
+      - ./utils/postgresql-42.7.5.jar:/opt/spark/resources/postgresql-42.7.5.jar
+      - ./data/checkpoint:/opt/spark/checkpoint         # moved checkpoint inside data
+      - ./utils:/opt/spark/utils
     networks:
       - pgnetwork
-    command: ["/wait-for-kafka.sh", "kafka", "python", "scripts/data_generator.py"]
+
+  spark-worker:
+    image: bitnami/spark:latest
+    env_file:
+      - .env
+    depends_on:
+      - spark
+    user: root
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./scripts:/opt/spark/scripts
+      - ./utils/postgresql-42.7.5.jar:/opt/spark/resources/postgresql-42.7.5.jar
+      - ./data/checkpoint:/opt/spark/checkpoint         # moved checkpoint inside data
+      - ./utils:/opt/spark/utils
+    networks:
+      - pgnetwork
+
+  spark-job:
+    build:
+      context: .
+      dockerfile: utils/Dockerfile.spark_job
+    env_file:
+      - .env
+    depends_on:
+      - spark
+      - db
+      - mysql
+    user: root
+    volumes:
+      - ./data/logs:/app/logs                              # moved logs inside data
+    networks:
+      - pgnetwork
+  data_extractor:
+    build:
+      context: .
+      dockerfile: utils/Dockerfile.data_extractor
+    env_file:
+      - .env
+    volumes:
+    - ./data:/app/data  # or whichever container path matches your script’s data_dir
+    - ./data_extractor:/app/data_extractor
+    networks:
+      - pgnetwork
+    user: root
+
+
 
 networks:
   pgnetwork:
     driver: bridge
-
-volumes:
-  postgres_data:
-  pgadmin_data:
-  grafana_data:

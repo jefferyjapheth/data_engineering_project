@@ -42,6 +42,22 @@ json_schema = StructType([
     StructField("activity_status", StringType(), False),
 ])
 
+# === Spark Loading Function ===
+def load_data():
+    push_down_query = "(SELECT id, updatedAt FROM orders LIMIT 1) AS table_query" 
+
+    df = SparkSession.read.format("jdbc").option("url", f"{db_url}") \ 
+        .option("driver", "com.mysql.jdbc.Driver") \
+        .option("dbtable", push_down_query) \
+        .option("user", users).option("password", password).option("header","true") \
+        .option("fetchSize", 10000) \
+        .option("partitionColumn", "updatedAt") \
+        .option("numPartitions", 100) \
+        .option("lowerBound", "2024-07-13 16:00:00.000000") \
+        .option("upperBound", "2024-07-14 16:00:00.000000") \
+        
+    pass
+
 # === Spark Processing Function ===
 
 def process_batch(df, batch_id):
