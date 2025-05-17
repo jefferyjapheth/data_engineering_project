@@ -15,7 +15,6 @@ services:
       - "3306:3306"
     volumes:
       - ./data/mysql_data:/var/lib/mysql
-      - ./scripts/mysql_setup.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - pgnetwork
     healthcheck:
@@ -124,7 +123,7 @@ services:
     volumes:
       - ./scripts:/opt/spark/scripts
       - ./utils/postgresql-42.7.5.jar:/opt/spark/resources/postgresql-42.7.5.jar
-      - ./data/checkpoint:/opt/spark/checkpoint         # moved checkpoint inside data
+      - ./data/checkpoint:/opt/spark/checkpoint         
       - ./utils:/opt/spark/utils
     networks:
       - pgnetwork
@@ -141,7 +140,7 @@ services:
       - mysql
     user: root
     volumes:
-      - ./data/logs:/app/logs                              # moved logs inside data
+      - ./data/logs:/app/logs                             
     networks:
       - pgnetwork
   data_extractor:
@@ -151,11 +150,15 @@ services:
     env_file:
       - .env
     volumes:
-    - ./data:/app/data  # or whichever container path matches your script’s data_dir
-    - ./data_extractor:/app/data_extractor
+      - ./data:/app/data  
+      - ./utils:/app/utils
+      - ./.env:/app/.env:ro
+      - ./data_extractor:/app/data_extractor
+      - ./data_extractor/kaggle.json:/root/.kaggle/kaggle.json:ro  #  Mount kaggle.json directly
     networks:
       - pgnetwork
     user: root
+
 
 
 

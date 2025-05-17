@@ -9,3 +9,7 @@
 **/__pycache__
 **/collector
 **/checkpoint
+**/kaggle.json
+**/kaggle
+**/.vscode
+**/mysql.session.sql
