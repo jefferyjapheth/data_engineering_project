@@ -17,3 +17,7 @@ This project is organized into the following branches:
 
 + Week 5: Lab: Real-Time Customer Heart Beat Monitoring System
     - [Real-Time Customer Heart Beat Monitoring System](https://github.com/jeffery-ot/data_engineering_project/tree/heartrate_monitoring_system)
+
+
++ Week 6: Lab: Airflow Project: Flight Price Analysis
+    - [Airflow Project: Flight Price Analysis](https://github.com/jeffery-ot/data_engineering_project/tree/flight_price_analysis)    
