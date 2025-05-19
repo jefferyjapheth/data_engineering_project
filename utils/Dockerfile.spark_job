@@ -1,27 +1,19 @@
-# Use Bitnami Spark as the base image
 FROM bitnami/spark:latest
 
-# Set the working directory
 WORKDIR /opt/spark
 
-# Copy transformation scripts and resources (Postgres and MySQL JDBC jars)
+# Copy scripts and JDBC drivers
 COPY scripts/ ./scripts
 COPY utils/postgresql-42.7.5.jar ./resources/postgresql-42.7.5.jar
 COPY utils/mysql-connector-j-9.3.0.jar ./resources/mysql-connector-j-9.3.0.jar
 
-
-# Switch to root user to create logs directory
+# Use root to make sure the log directory can be written
 USER root
 
-# Create logs directory with root privileges
-RUN mkdir -p /app/logs
+# Create log directory (this will be mounted from host)
+RUN mkdir -p /opt/spark/logs
 
-# Install Python dependencies (kafka-python for Kafka integration)
-RUN pip install --no-cache-dir kafka-python
-
-# Default command to run the Spark transformation job
+# Default command to run the Spark job with both JDBC drivers included
 CMD ["spark-submit", \
-     "--packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.5", \
      "--jars", "/opt/spark/resources/postgresql-42.7.5.jar,/opt/spark/resources/mysql-connector-j-9.3.0.jar", \
-     "/opt/spark/scripts/spark_transformation.py"]
-
+     "/opt/spark/scripts/spark_job.py"]

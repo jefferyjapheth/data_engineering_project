@@ -1,4 +1,5 @@
 
+
 services:
 
   mysql:
@@ -46,6 +47,9 @@ services:
     container_name: postgres_lab_pgadminn
     env_file:
       - .env
+    environment:
+       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     ports:
       - "8082:80"
     depends_on:
@@ -103,8 +107,10 @@ services:
     volumes:
       - ./scripts:/opt/spark/scripts
       - ./utils/postgresql-42.7.5.jar:/opt/spark/resources/postgresql-42.7.5.jar
-      - ./data/checkpoint:/opt/spark/checkpoint         # moved checkpoint inside data
+      - ./utils/mysql-connector-j-9.3.0.jar:/opt/spark/resources/mysql-connector-j-9.3.0.jar
+      - ./data/checkpoint:/opt/spark/checkpoint         
       - ./utils:/opt/spark/utils
+      - ./data/logs:/opt/spark/logs
     networks:
       - pgnetwork
 
@@ -123,8 +129,10 @@ services:
     volumes:
       - ./scripts:/opt/spark/scripts
       - ./utils/postgresql-42.7.5.jar:/opt/spark/resources/postgresql-42.7.5.jar
+      - ./utils/mysql-connector-j-9.3.0.jar:/opt/spark/resources/mysql-connector-j-9.3.0.jar
       - ./data/checkpoint:/opt/spark/checkpoint         
       - ./utils:/opt/spark/utils
+      - ./data/logs:/opt/spark/logs
     networks:
       - pgnetwork
 
@@ -143,6 +151,7 @@ services:
       - ./data/logs:/app/logs                             
     networks:
       - pgnetwork
+
   data_extractor:
     build:
       context: .
@@ -154,14 +163,14 @@ services:
       - ./utils:/app/utils
       - ./.env:/app/.env:ro
       - ./data_extractor:/app/data_extractor
-      - ./data_extractor/kaggle.json:/root/.kaggle/kaggle.json:ro  #  Mount kaggle.json directly
+      - ./data_extractor/kaggle.json:/root/.kaggle/kaggle.json:ro
     networks:
       - pgnetwork
     user: root
 
-
-
-
 networks:
   pgnetwork:
     driver: bridge
+
+volumes:
+  pgadmin_data:

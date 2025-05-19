@@ -1,57 +1,60 @@
--- Create the database if it doesn’t exist
---CREATE DATABASE heartrate_db;
+-- Create a dedicated schema to flight analytics 
+CREATE SCHEMA IF NOT EXISTS flight_analytics;
 
--- Connect to the database
---\c heartrate_db;
-
--- Drop and recreate the table for athlete heart rate data
-DROP TABLE IF EXISTS athlete_heartrates;
--- Create the database if it doesn’t exist (for use outside psql)
--- You can skip this in Docker setup if DB is created via environment vars
-
--- \c heartrate_db -- (use only if executing interactively)
-
--- Drop and recreate the table for athlete heart rate data
-DROP TABLE IF EXISTS athlete_heartrates;
-CREATE TABLE athlete_heartrates (
-    id SERIAL PRIMARY KEY,
-    athlete_id VARCHAR(20) NOT NULL,
-    timestamp TIMESTAMPTZ NOT NULL,
-    heart_rate SMALLINT NOT NULL CHECK (heart_rate >= 0),
-    activity_status VARCHAR(20)
+-- Drop and recreate the cleaned flight data table
+DROP TABLE IF EXISTS flight_analytics.flight_prices_cleaned;
+CREATE TABLE flight_analytics.flight_prices_cleaned (
+    airline VARCHAR,
+    source VARCHAR,
+    source_name VARCHAR,
+    destination VARCHAR,
+    destination_name VARCHAR,
+    departure_timestamp TIMESTAMPTZ,
+    arrival_timestamp TIMESTAMPTZ,
+    duration_hours DOUBLE PRECISION,
+    stopovers VARCHAR,
+    aircraft_type VARCHAR,
+    class VARCHAR,
+    booking_source VARCHAR,
+    base_fare_bdt DOUBLE PRECISION,
+    tax_surcharge_bdt DOUBLE PRECISION,
+    total_fare_bdt DOUBLE PRECISION,
+    seasonality VARCHAR,
+    days_before_departure INT
 );
 
--- Indexes to improve query performance
-CREATE INDEX IF NOT EXISTS idx_hr_timestamp ON athlete_heartrates(timestamp DESC);
-CREATE INDEX IF NOT EXISTS idx_hr_athlete_id ON athlete_heartrates(athlete_id);
-CREATE INDEX IF NOT EXISTS idx_hr_value ON athlete_heartrates(heart_rate);
+-- Drop and recreate KPI tables
 
--- Drop old views if they exist
-DROP VIEW IF EXISTS vw_recent_high_hr;
-DROP VIEW IF EXISTS vw_abnormal_low_hr;
+-- KPI 1: Average fare by airline
+DROP TABLE IF EXISTS flight_analytics.kpi_avg_fare_by_airline;
+CREATE TABLE flight_analytics.kpi_avg_fare_by_airline (
+    airline VARCHAR,
+    avg_total_fare DOUBLE PRECISION
+);
 
--- View: Summary of high heart rate events (> 150 bpm)
-CREATE VIEW vw_recent_high_hr AS
-SELECT 
-    athlete_id,
-    MAX(heart_rate) AS max_heart_rate,
-    MIN(heart_rate) AS min_heart_rate,
-    ROUND(AVG(heart_rate)::NUMERIC, 2) AS avg_heart_rate,
-    COUNT(*) AS total_events,
-    MAX(timestamp) AS last_event_timestamp
-FROM athlete_heartrates
-WHERE heart_rate > 150
-GROUP BY athlete_id;
+-- KPI 2: Seasonal fare variation
+DROP TABLE IF EXISTS flight_analytics.kpi_seasonal_variation;
+CREATE TABLE flight_analytics.kpi_seasonal_variation (
+    seasonality VARCHAR,
+    avg_fare DOUBLE PRECISION
+);
 
--- View: Summary of abnormally low heart rate events (< 40 bpm)
-CREATE VIEW vw_abnormal_low_hr AS
-SELECT 
-    athlete_id,
-    MAX(heart_rate) AS max_heart_rate,
-    MIN(heart_rate) AS min_heart_rate,
-    ROUND(AVG(heart_rate)::NUMERIC, 2) AS avg_heart_rate,
-    COUNT(*) AS total_events,
-    MAX(timestamp) AS last_event_timestamp
-FROM athlete_heartrates
-WHERE heart_rate < 40
-GROUP BY athlete_id;
+-- KPI 3: Booking count by airline
+DROP TABLE IF EXISTS flight_analytics.kpi_booking_count;
+CREATE TABLE flight_analytics.kpi_booking_count (
+    airline VARCHAR,
+    booking_count BIGINT
+);
+
+-- KPI 4: Popular routes
+DROP TABLE IF EXISTS flight_analytics.kpi_popular_routes;
+CREATE TABLE flight_analytics.kpi_popular_routes (
+    source VARCHAR,
+    destination VARCHAR,
+    route_count BIGINT
+);
+
+-- Indexing
+CREATE INDEX IF NOT EXISTS idx_fp_airline ON flight_analytics.flight_prices_cleaned(airline);
+CREATE INDEX IF NOT EXISTS idx_fp_departure ON flight_analytics.flight_prices_cleaned(departure_timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_fp_route ON flight_analytics.flight_prices_cleaned(source, destination);
