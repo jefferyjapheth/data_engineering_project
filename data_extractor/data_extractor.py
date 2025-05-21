@@ -3,6 +3,10 @@ import pandas as pd
 from sqlalchemy import create_engine, inspect
 from kaggle.api.kaggle_api_extended import KaggleApi
 
+mysql_user = os.environ["MYSQL_ROOT_USER"]  # root
+mysql_password = os.environ["MYSQL_ROOT_PASSWORD"]
+
+
 def setup_data_dir(base_dir=None):
     if base_dir is None:
         base_dir = os.path.dirname(os.path.abspath(__file__))
