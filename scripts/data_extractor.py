@@ -5,10 +5,8 @@ from kaggle.api.kaggle_api_extended import KaggleApi
 
 def setup_data_dir(base_dir=None):
     if base_dir is None:
-        # Assuming this script lives in /opt/airflow/scripts inside container
         base_dir = os.path.dirname(os.path.abspath(__file__))
-    # Adjust to match your mounted data directory inside container
-    data_dir = os.path.abspath(os.path.join(base_dir, "..", "data", "mysql_data"))
+    data_dir = os.path.abspath(os.path.join(base_dir, "..", "data", "mysql"))
     os.makedirs(data_dir, exist_ok=True)
     return data_dir
 
@@ -40,20 +38,14 @@ def load_data_to_mysql(df, engine, table_name):
     df.to_sql(table_name, con=engine, if_exists="replace", index=False)
     print(f"Data loaded into MySQL table: {table_name}")
 
-from pandas.api.types import (
-    is_string_dtype,
-    is_integer_dtype,
-    is_float_dtype
-)
+from pandas.api.types import is_string_dtype, is_integer_dtype, is_float_dtype
 
 def validate_ingestion(df, engine, table_name):
     inspector = inspect(engine)
 
-    # Step 1: Check table exists
     if table_name not in inspector.get_table_names():
-        raise ValueError(f"Validation failed: Table '{table_name}' does not exist in the database.")
+        raise ValueError(f"Validation failed: Table '{table_name}' does not exist.")
 
-    # Step 2: Check row count matches
     with engine.connect() as conn:
         result = conn.execute(f"SELECT COUNT(*) FROM {table_name}")
         row_count_db = result.scalar()
@@ -64,7 +56,6 @@ def validate_ingestion(df, engine, table_name):
     else:
         print(f"Row count validation passed: {row_count_csv} rows")
 
-    # Step 3: Robust column type validation using pandas.api.types
     expected_types = {
         "Airline": is_string_dtype,
         "Source": is_string_dtype,
@@ -100,10 +91,9 @@ def validate_ingestion(df, engine, table_name):
     print("Data validation passed.")
 
 def main(dataset, table_name):
-    # Use env vars from docker-compose .env
-    mysql_user = os.getenv("MYSQL_USER", "mysql_user")  # fallback to default
-    mysql_password = os.getenv("MYSQL_PASSWORD", "Amalitech")
-    mysql_host = "mysql"  # Docker Compose service name
+    mysql_user = os.getenv("MYSQL_USER", "mysql")
+    mysql_password = os.getenv("MYSQL_PASSWORD", "amalitech")
+    mysql_host = "mysql"  # service name in docker-compose
     mysql_db = os.getenv("MYSQL_DATABASE", "staging_db")
 
     data_dir = setup_data_dir()

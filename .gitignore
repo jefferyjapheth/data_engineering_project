@@ -9,3 +9,8 @@ airflow-webserver.pid
 webserver_config.py
 airflow.cfg
 airflow.db
+data/mysql
+data/postgres
+data/pgadmin
+logs/
+scripts/kaggle.json
