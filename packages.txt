@@ -1,5 +1,0 @@
-build-essential
-pkg-config
-python3-dev
-default-libmysqlclient-dev
-gcc
