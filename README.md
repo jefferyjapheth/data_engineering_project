@@ -5,8 +5,8 @@
 ##### airflow ui
 ![alt text](image-1.png)
 
-#### flight_price_ingestion_dag setup
-![alt text](image-2.png)
+#### flight_price_ingestion_dag: airflow graph
+![alt text](image-3.png)
 
 
 Overview
