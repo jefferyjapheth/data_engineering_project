@@ -14,3 +14,5 @@ data/postgres
 data/pgadmin
 logs/
 scripts/kaggle.json
+.vscode
+mysql.session.sql
