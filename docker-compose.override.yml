@@ -9,7 +9,7 @@ services:
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER"]
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U $POSTGRES_USER'"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -42,7 +42,7 @@ services:
     volumes:
       - ./data/mysql:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p'$MYSQL_ROOT_PASSWORD'"]
+      test: ["CMD-SHELL", "sh -c 'mysqladmin ping -h localhost -uroot -p$MYSQL_ROOT_PASSWORD'"]
       interval: 10s
       timeout: 5s
       retries: 5

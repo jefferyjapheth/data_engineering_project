@@ -1,3 +1,13 @@
+#### Astro UI and Logs Snapshot
+##### astro logs
+![alt text](image.png)
+
+##### airflow ui
+![alt text](image-1.png)
+
+
+
+
 Overview
 ========
 
