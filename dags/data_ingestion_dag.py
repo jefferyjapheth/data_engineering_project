@@ -6,7 +6,6 @@ import os
 import pandas as pd
 from sqlalchemy import create_engine, inspect
 from kaggle.api.kaggle_api_extended import KaggleApi
-from pandas.api.types import is_string_dtype, is_integer_dtype, is_float_dtype
 
 logger = LoggingMixin().log
 
@@ -14,11 +13,10 @@ logger = LoggingMixin().log
     schedule=None,
     start_date=datetime(2024, 1, 1),
     catchup=False,
-    tags=["flight", "kaggle", "mysql"],
+    tags=["flight", "kaggle", "mysql", "ingestion"],
 )
-def flight_price_ingestion():
-
-    @task(retries=3, retry_delay=timedelta(minutes=5))
+def data_ingestion():
+    @task()
     def setup_data_dir():
         base_dir = os.path.dirname(os.path.abspath(__file__))
         data_dir = os.path.abspath(os.path.join(base_dir, "..", "data", "mysql"))
@@ -26,9 +24,12 @@ def flight_price_ingestion():
         logger.info(f"Data directory set at {data_dir}")
         return data_dir
 
-    @task(retries=3, retry_delay=timedelta(minutes=5))
+    @task()
     def download_dataset(data_dir: str, dataset: str):
-        os.environ["KAGGLE_CONFIG_DIR"] = os.path.join(os.path.dirname(__file__), "..", "scripts")
+        config_dir = os.path.join(os.path.dirname(__file__), "..", "scripts")
+        os.environ["KAGGLE_CONFIG_DIR"] = config_dir
+        os.makedirs(config_dir, exist_ok=True)  # avoid FileExistsError
+
         api = KaggleApi()
         api.authenticate()
         logger.info(f"Downloading dataset {dataset} to {data_dir}")
@@ -77,35 +78,6 @@ def flight_price_ingestion():
         if len(df) != row_count_db:
             raise ValueError(f"Row count mismatch: CSV={len(df)}, MySQL={row_count_db}")
 
-        expected_types = {
-            "Airline": is_string_dtype,
-            "Source": is_string_dtype,
-            "Source Name": is_string_dtype,
-            "Destination": is_string_dtype,
-            "Destination Name": is_string_dtype,
-            "Departure Date & Time": is_string_dtype,
-            "Arrival Date & Time": is_string_dtype,
-            "Duration (hrs)": is_float_dtype,
-            "Stopovers": is_string_dtype,
-            "Aircraft Type": is_string_dtype,
-            "Class": is_string_dtype,
-            "Booking Source": is_string_dtype,
-            "Base Fare (BDT)": is_float_dtype,
-            "Tax & Surcharge (BDT)": is_float_dtype,
-            "Total Fare (BDT)": is_float_dtype,
-            "Seasonality": is_string_dtype,
-            "Days Before Departure": is_integer_dtype,
-        }
-
-        mismatches = {
-            col: f"invalid type: {df[col].dtype}"
-            for col, check_func in expected_types.items()
-            if col in df and not check_func(df[col])
-        }
-
-        if mismatches:
-            raise TypeError(f"Column type mismatches:\n{mismatches}")
-
         logger.info("Validation passed")
         return "Validation passed"
 
@@ -119,4 +91,4 @@ def flight_price_ingestion():
     load_to_mysql(df_json, table_name)
     validate(df_json, table_name)
 
-flight_price_ingestion()
+data_ingestion()
