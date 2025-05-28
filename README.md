@@ -1,56 +1,97 @@
-#### Astro UI and Logs Snapshot
-##### astro logs
-![alt text](image.png)
 
-##### airflow ui
-![alt text](image-1.png)
+# Flight Price ETL Pipeline – Airflow Project
 
-#### flight_price_ingestion_dag: airflow graph
-![alt text](image-3.png)
-
-
-Overview
-========
-
-Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
-
-Project Contents
+## Overview
 ================
 
-Your Astro project contains the following files and folders:
+#### Objective
+Develop an end-to-end data pipeline using Apache Airflow to process and analyze flight price
+data for Bangladesh. The pipeline must ingest raw CSV data, validate and transform it, compute
+key performance indicators (KPIs), and store the final results in a PostgreSQL database for
+further analysis.
 
-- dags: This folder contains the Python files for your Airflow DAGs. By default, this directory includes one example DAG:
-    - `example_astronauts`: This DAG shows a simple ETL pipeline example that queries the list of astronauts currently in space from the Open Notify API and prints a statement for each astronaut. The DAG uses the TaskFlow API to define tasks in Python, and dynamic task mapping to dynamically print a statement for each astronaut. For more on how this DAG works, see our [Getting started tutorial](https://www.astronomer.io/docs/learn/get-started-with-airflow).
-- Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
-- include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
-- packages.txt: Install OS-level packages needed for your project by adding them to this file. It is empty by default.
-- requirements.txt: Install Python packages needed for your project by adding them to this file. It is empty by default.
-- plugins: Add custom or community plugins for your project to this file. It is empty by default.
-- airflow_settings.yaml: Use this local-only file to specify Airflow Connections, Variables, and Pools instead of entering them in the Airflow UI as you develop DAGs in this project.
+#### What This Pipeline Does
 
-Deploy Your Project Locally
-===========================
+1. **Download** flight price data from Kaggle using the API.
+2. **Ingest** raw CSV into a MySQL `staging_db`.
+3. **Validate** and **clean** the raw data (handling duplicates, nulls, data types).
+4. **Enrich** the data with seasonality based on the journey date.
+5. **Compute KPIs** (e.g., average prices by airline, route trends).
+6. **Load** final tables into PostgreSQL for analysis.
 
-Start Airflow on your local machine by running 'astro dev start'.
 
-This command will spin up five Docker containers on your machine, each for a different Airflow component:
 
-- Postgres: Airflow's Metadata Database
-- Scheduler: The Airflow component responsible for monitoring and triggering tasks
-- DAG Processor: The Airflow component responsible for parsing DAGs
-- API Server: The Airflow component responsible for serving the Airflow UI and API
-- Triggerer: The Airflow component responsible for triggering deferred tasks
+- Start the environment with:
+```bash
+astro dev start --env .env --verbosity debug
+````
 
-When all five containers are ready the command will open the browser to the Airflow UI at http://localhost:8080/. You should also be able to access your Postgres Database at 'localhost:5432/postgres' with username 'postgres' and password 'postgres'.
+- Trigger the DAG manually or via the Airflow UI.
 
-Note: If you already have either of the above ports allocated, you can either [stop your existing Docker containers or change the port](https://www.astronomer.io/docs/astro/cli/troubleshoot-locally#ports-are-not-available-for-my-local-airflow-webserver).
+##  DAG Design & Best Practices
 
-Deploy Your Project to Astronomer
-=================================
+* Used **TaskFlow API** (`@task`) for cleaner, Pythonic task definition.
+* Logging to file enabled via custom `logger.py` (`data/logs`).
+* Applied **separation of concerns** by splitting extraction and transformation into individual scripts.
+* DAG scheduled using `@daily` with proper retries, dependencies, and alerting hooks.
 
-If you have an Astronomer account, pushing code to a Deployment on Astronomer is simple. For deploying instructions, refer to Astronomer documentation: https://www.astronomer.io/docs/astro/deploy-code/
+## Issues Faced & Fixes
 
-Contact
-=======
+###### PostgreSQL Env Variables Not Loading
 
-The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.
+**Issue**: Airflow couldn’t read Postgres credentials properly, causing connection errors.
+
+**Fix**: Forced the environment to load using:
+
+```bash
+set -a && source .env && set +a
+```
+
+#### Docker Network Inconsistencies
+
+**Issue**: Containers (Airflow, MySQL, PostgreSQL) weren’t communicating due to network mismatches.
+
+**Fix**: Used:
+
+```bash
+docker inspect <container>
+```
+
+to identify network names and updated `docker-compose.override.yml` with:
+
+```yaml
+networks:
+  data-engineering-project_d7c572_airflow:
+    external: true
+```
+**Issue**: A general lack of understanding of [airflow, astronomer] concepts use cases.
+
+**Fix**: Read docs and some books with some video tutorials.
+
+#### KPIs Calculated
+
+* Average flight price per airline
+* Route popularity and cost trends
+* Seasonal pricing variations
+
+
+## Airflow UI Snapshots
+#### Dags from flight_etl_dag.py 
+![alt text](data/doc_images/image.png)
+
+##### DAG: download_and_stage_to_mysql 
+![alt text](data/doc_images/image-2.png)
+
+##### DAG: transform_and_load_to_postgres 
+![alt text](data/doc_images/image-3.png)
+
+#### Asset 
+![alt text](data/doc_images/image-1.png)
+
+#### Home
+![alt text](data/doc_images/image-4.png)
+
+
+
+
+
