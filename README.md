@@ -33,7 +33,7 @@ astro dev start --env .env --verbosity debug
 * Used **TaskFlow API** (`@task`) for cleaner, Pythonic task definition.
 * Logging to file enabled via custom `logger.py` (`data/logs`).
 * Applied **separation of concerns** by splitting extraction and transformation into individual scripts.
-* DAG scheduled using `@daily` with proper retries, dependencies, and alerting hooks.
+* Manual DAG scheduled using `@None` with proper retries, dependencies, and alerting hooks.
 
 ## Issues Faced & Fixes
 
